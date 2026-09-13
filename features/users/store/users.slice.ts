@@ -3,6 +3,7 @@ import type {
   UserItem,
   CreateUserDto,
   UpdateUserDto,
+  UsersFilters,
 } from '../interfaces/user.interface';
 import { usersApi } from '../api/users.api';
 
@@ -15,8 +16,16 @@ export interface UsersState {
   isLoading: boolean;
   isCreateModalOpen: boolean;
   isEditModalOpen: boolean;
+  isFilterModalOpen: boolean;
   activeUser: UserItem | null;
+  filters: UsersFilters;
 }
+
+const defaultFilters: UsersFilters = {
+  search: '',
+  role: 'all',
+  status: 'all',
+};
 
 const initialState: UsersState = {
   users: [],
@@ -27,7 +36,9 @@ const initialState: UsersState = {
   isLoading: true,
   isCreateModalOpen: false,
   isEditModalOpen: false,
+  isFilterModalOpen: false,
   activeUser: null,
+  filters: defaultFilters,
 };
 
 export const fetchUsers = createAsyncThunk(
@@ -35,7 +46,7 @@ export const fetchUsers = createAsyncThunk(
   async (page: number | undefined, { getState }) => {
     const state = getState() as { users: UsersState };
     const targetPage = page ?? state.users.currentPage;
-    return await usersApi.getUsers(targetPage, state.users.pageSize).send();
+    return await usersApi.getUsers(targetPage, state.users.pageSize, state.users.filters).send();
   }
 );
 
@@ -67,6 +78,24 @@ export const deleteUser = createAsyncThunk(
   }
 );
 
+export const applyFilters = createAsyncThunk(
+  'users/applyFilters',
+  async (filters: Partial<UsersFilters>, { dispatch }) => {
+    dispatch(setFilters(filters));
+    dispatch(closeFilterModal());
+    dispatch(fetchUsers(1));
+  }
+);
+
+export const clearFilters = createAsyncThunk(
+  'users/clearFilters',
+  async (_, { dispatch }) => {
+    dispatch(resetFilters());
+    dispatch(closeFilterModal());
+    dispatch(fetchUsers(1));
+  }
+);
+
 export const usersSlice = createSlice({
   name: 'users',
   initialState,
@@ -87,6 +116,18 @@ export const usersSlice = createSlice({
     closeEditModal(state) {
       state.activeUser = null;
       state.isEditModalOpen = false;
+    },
+    openFilterModal(state) {
+      state.isFilterModalOpen = true;
+    },
+    closeFilterModal(state) {
+      state.isFilterModalOpen = false;
+    },
+    setFilters(state, action: PayloadAction<Partial<UsersFilters>>) {
+      state.filters = { ...state.filters, ...action.payload };
+    },
+    resetFilters(state) {
+      state.filters = defaultFilters;
     },
   },
   extraReducers: (builder) => {
@@ -113,6 +154,10 @@ export const {
   closeCreateModal,
   openEditModal,
   closeEditModal,
+  openFilterModal,
+  closeFilterModal,
+  setFilters,
+  resetFilters,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

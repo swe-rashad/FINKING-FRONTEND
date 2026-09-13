@@ -4,6 +4,7 @@ import type {
   PaginatedResponse,
   CreateUserDto,
   UpdateUserDto,
+  UsersFilters,
 } from '../interfaces/user.interface';
 
 export interface UserExportResponse {
@@ -13,9 +14,15 @@ export interface UserExportResponse {
 }
 
 export const usersApi = {
-  getUsers(page = 1, limit = 10, search = '') {
+  getUsers(page = 1, limit = 10, filters?: Partial<UsersFilters>) {
     return alovaInstance.Get<PaginatedResponse<UserItem>>('/api/users', {
-      params: { page, limit, search },
+      params: {
+        page,
+        limit,
+        ...(filters?.search ? { search: filters.search } : {}),
+        ...(filters?.role && filters.role !== 'all' ? { role: filters.role } : {}),
+        ...(filters?.status && filters.status !== 'all' ? { status: filters.status } : {}),
+      },
     });
   },
 

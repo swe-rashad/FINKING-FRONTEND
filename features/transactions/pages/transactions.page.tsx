@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -197,6 +198,9 @@ export default function TransactionsPage() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>{`${t('transactions.title')} | FINKING`}</title>
+      </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">

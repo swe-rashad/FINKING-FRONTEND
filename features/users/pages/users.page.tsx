@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -16,6 +17,7 @@ import EditIcon from '@/features/dashboard/components/icons/EditIcon';
 import { useUsers } from '../hooks/useUsers';
 import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
+import { UsersFilterModal } from '../components/UsersFilterModal';
 import type { UserItem } from '../interfaces/user.interface';
 
 export async function getStaticProps() {
@@ -32,10 +34,16 @@ export default function UsersPage() {
     currentPage,
     totalPages,
     isLoading,
-    setPage,
+    filters,
+    isFilterModalOpen,
     isCreateModalOpen,
     isEditModalOpen,
     activeUser,
+    setPage,
+    openFilterModal,
+    closeFilterModal,
+    applyFilters,
+    clearFilters,
     openCreateModal,
     closeCreateModal,
     openEditModal,
@@ -45,6 +53,11 @@ export default function UsersPage() {
   } = useUsers();
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const hasActiveFilters = Boolean(
+    filters.search ||
+      (filters.role && filters.role !== 'all') ||
+      (filters.status && filters.status !== 'all')
+  );
 
   const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
     await usersApi.exportUsers(format, email).send();
@@ -163,6 +176,9 @@ export default function UsersPage() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>{`${t('users.title')} | FINKING`}</title>
+      </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
@@ -173,8 +189,13 @@ export default function UsersPage() {
             <Button
               variant="secondary"
               icon={<FilterIcon size={16} />}
+              onClick={openFilterModal}
+              className={hasActiveFilters ? 'border-primary-500 bg-primary-50/70 text-primary-700' : ''}
             >
-              {t('users.actions.filter')}
+              <span>{t('users.actions.filter')}</span>
+              {hasActiveFilters && (
+                <span className="w-1.5 h-1.5 rounded-full bg-primary-600" />
+              )}
             </Button>
 
             <Button
@@ -231,6 +252,14 @@ export default function UsersPage() {
               await updateUser(activeUser.id, data);
             }
           }}
+        />
+
+        <UsersFilterModal
+          isOpen={isFilterModalOpen}
+          onClose={closeFilterModal}
+          filters={filters}
+          onApply={applyFilters}
+          onReset={clearFilters}
         />
 
         <ExportModal

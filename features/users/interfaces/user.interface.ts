@@ -22,3 +22,9 @@ export interface PaginatedResponse<T> {
   limit: number;
   totalPages: number;
 }
+
+export interface UsersFilters {
+  search: string;
+  role: string;
+  status: string;
+}

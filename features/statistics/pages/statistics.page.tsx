@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -225,6 +226,9 @@ export default function StatisticsPage() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>{`${t('statistics.title')} | FINKING`}</title>
+      </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">

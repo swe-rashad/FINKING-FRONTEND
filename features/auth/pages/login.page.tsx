@@ -1,5 +1,6 @@
 import { useState, FormEvent } from 'react';
 import { useRouter } from 'next/router';
+import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { AuthLayout } from '@/features/auth';
 import { Button, Input } from '@/shared';
@@ -51,6 +52,9 @@ export default function LoginPage() {
 
   return (
     <GuestGuard>
+      <Head>
+        <title>{`${t('login.title')} | FINKING`}</title>
+      </Head>
       <AuthLayout>
         <div className="flex w-full justify-center">
           <form onSubmit={handleSubmit} className="w-[23.438rem]">

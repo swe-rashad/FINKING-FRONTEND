@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
+import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -70,6 +71,9 @@ export default function TransactionDetailsPage() {
 
   return (
     <DashboardLayout>
+      <Head>
+        <title>{`${transaction.id} - ${t('transactionDetails.title')} | FINKING`}</title>
+      </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs sm:text-sm font-medium mb-4 text-gray-500">

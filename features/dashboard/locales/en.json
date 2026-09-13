@@ -64,6 +64,19 @@
       "statusLabel": "Status",
       "submitCreate": "Create User",
       "submitEdit": "Save Changes"
+    },
+    "filterModal": {
+      "title": "Filter Users",
+      "description": "Filter users by keyword, role, and account status.",
+      "searchLabel": "Search Keyword",
+      "searchPlaceholder": "Search by name, username, or email...",
+      "roleLabel": "User Role",
+      "allRoles": "All Roles",
+      "statusLabel": "Account Status",
+      "allStatuses": "All Statuses",
+      "apply": "Apply Filters",
+      "reset": "Reset",
+      "cancel": "Cancel"
     }
   },
   "transactions": {

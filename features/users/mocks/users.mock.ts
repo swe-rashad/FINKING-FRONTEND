@@ -136,10 +136,10 @@ export const usersMock = defineMock({
   },
 
   '[GET]/api/users': ({ query }) => {
-    let filtered = usersStore;
+    let filtered = [...usersStore];
     if (query.search) {
       const search = String(query.search).toLowerCase();
-      filtered = usersStore.filter(
+      filtered = filtered.filter(
         (u) =>
           u.username.toLowerCase().includes(search) ||
           u.firstName.toLowerCase().includes(search) ||
@@ -147,8 +147,16 @@ export const usersMock = defineMock({
           u.email.toLowerCase().includes(search)
       );
     }
+    if (query.role && query.role !== 'all') {
+      const role = String(query.role).toLowerCase();
+      filtered = filtered.filter((u) => u.role.toLowerCase() === role);
+    }
+    if (query.status && query.status !== 'all') {
+      const status = String(query.status).toLowerCase();
+      filtered = filtered.filter((u) => u.status.toLowerCase() === status);
+    }
 
-    return paginateMock(filtered, query, { totalOverride: 50 });
+    return paginateMock(filtered, query);
   },
 
   '[POST]/api/users': ({ data }) => {
