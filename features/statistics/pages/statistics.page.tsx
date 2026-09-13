@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout, ExportModal } from '@/features/dashboard';
@@ -13,12 +13,8 @@ import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
 import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
 import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
-import type {
-  StatisticItem,
-  MonthlyRevenueItem,
-  CategoryDistributionItem,
-} from '../interfaces/statistics.interface';
-import { statisticsApi } from '../api/statistics.api';
+import type { StatisticItem } from '../interfaces/statistics.interface';
+import { useStatistics } from '../hooks';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['dashboard']);
@@ -29,22 +25,17 @@ export default function StatisticsPage() {
   const t = useTranslations('dashboard');
   const { showToast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
-  const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
-  const [items, setItems] = useState<StatisticItem[]>([]);
-  const [monthlyRevenue, setMonthlyRevenue] = useState<MonthlyRevenueItem[]>([]);
-  const [categoryDistribution, setCategoryDistribution] = useState<CategoryDistributionItem[]>([]);
-  const [kpi, setKpi] = useState({
-    totalRevenue: '€0.00',
-    revenueGrowth: '+0.0%',
-    totalTransactions: '0',
-    transactionGrowth: '+0.0%',
-    activeUsers: '0',
-    userGrowth: '+0.0%',
-    avgTransaction: '€0.00',
-    avgGrowth: '+0.0%',
-  });
-  const [isLoading, setIsLoading] = useState(true);
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  const {
+    items,
+    monthlyRevenue,
+    categoryDistribution,
+    kpi,
+    isLoading,
+    hoveredPoint,
+    setHoveredPoint,
+  } = useStatistics();
 
   const handleExportSubmit = async (_email: string) => {
     void _email;
@@ -56,31 +47,6 @@ export default function StatisticsPage() {
       message: t('exportModal.toastSuccess'),
     });
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    statisticsApi
-      .getStatistics()
-      .send()
-      .then((res) => {
-        if (isMounted) {
-          setItems(res.items);
-          setMonthlyRevenue(res.monthlyRevenue);
-          setCategoryDistribution(res.categoryDistribution);
-          setKpi(res.kpi);
-          setIsLoading(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-      });
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
 
   const columns: Column<StatisticItem>[] = [
     {
