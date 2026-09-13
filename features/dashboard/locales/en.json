@@ -131,46 +131,6 @@
       "next": "Next"
     }
   },
-  "userDetails": {
-    "breadcrumbParent": "Users",
-    "breadcrumbCurrent": "User details",
-    "title": "User details",
-    "mainDetailsTitle": "Main details",
-    "additionalDetailsTitle": "Additional details",
-    "loading": "Loading user details...",
-    "detailsShared": "User details for {username} shared.",
-    "actions": {
-      "share": "Share details",
-      "edit": "Edit user"
-    },
-    "fields": {
-      "dateRegistered": "Date registered",
-      "role": "Role",
-      "username": "Username",
-      "status": "Status",
-      "fullName": "Full name",
-      "phone": "Phone number",
-      "email": "Email address",
-      "statusDescription": "Status description",
-      "userId": "User ID",
-      "accountTier": "Account Tier",
-      "kycVerification": "KYC Verification",
-      "lastLogin": "Last login",
-      "country": "Country",
-      "ipAddress": "IP address",
-      "twoFactor": "2D / 2FA Secure",
-      "branch": "Assigned Branch"
-    },
-    "values": {
-      "active": "Active",
-      "verified": "Verified",
-      "unverified": "Unverified",
-      "enabled": "Enabled",
-      "disabled": "Disabled",
-      "accountActive": "Verified & Approved",
-      "accountRestricted": "Account Restricted"
-    }
-  },
   "transactionDetails": {
     "breadcrumbParent": "Transactions",
     "breadcrumbCurrent": "Transaction details",
