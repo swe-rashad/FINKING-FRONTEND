@@ -8,6 +8,9 @@ import { statisticsMock } from '@/features/statistics/mocks/statistics.mock';
 export const MOCK_STORAGE_KEY = 'ENABLE_MOCKS';
 
 export function isMockEnabled(): boolean {
+  if (process.env.NEXT_PUBLIC_ENABLE_MOCKS !== undefined) {
+    return process.env.NEXT_PUBLIC_ENABLE_MOCKS === 'true';
+  }
   if (typeof window === 'undefined') {
     return true;
   }
@@ -56,6 +59,7 @@ const dynamicAdapter: ReturnType<typeof adapterFetch> = (elements, method) => {
 };
 
 export const alovaInstance = createAlova({
+  baseURL: process.env.NEXT_PUBLIC_API_URL || '',
   requestAdapter: dynamicAdapter,
   responded: async (response: Response) => {
     if (response && typeof response.json === 'function') {

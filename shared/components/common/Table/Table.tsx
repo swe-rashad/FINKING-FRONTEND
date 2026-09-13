@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import type { Column, TableProps } from './table.type';
+import type { TableProps } from './table.type';
 
 export function Table<T>({
   columns,

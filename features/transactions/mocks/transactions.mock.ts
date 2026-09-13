@@ -86,6 +86,34 @@ const mockTransactionsData: TransactionItem[] = [
 ];
 
 export const transactionsMock = defineMock({
+  '[GET]/api/transactions/export': ({ query }) => {
+    const format = (query?.format as string) || 'csv';
+    if (format === 'json') {
+      return {
+        data: JSON.stringify(mockTransactionsData, null, 2),
+        filename: 'transactions-export.json',
+        total: mockTransactionsData.length,
+      };
+    }
+    const headers = ['ID', 'No', 'Sender', 'Receiver', 'Amount', 'Date', 'Type', 'Status'];
+    const rows = mockTransactionsData.map((t) => [
+      `"${t.id}"`,
+      t.no,
+      `"${t.sender}"`,
+      `"${t.receiver}"`,
+      `"${t.amount}"`,
+      `"${t.date}"`,
+      `"${t.type}"`,
+      `"${t.status}"`,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    return {
+      data: csvContent,
+      filename: 'transactions-export.csv',
+      total: mockTransactionsData.length,
+    };
+  },
+
   '[GET]/api/transactions': ({ query }) => {
     return paginateMock(mockTransactionsData, query);
   },

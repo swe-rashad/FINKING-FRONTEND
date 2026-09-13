@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -11,6 +11,7 @@ import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
 import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
 import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
+import { downloadFile } from '@/shared/utils/download';
 import type { TransactionItem } from '../interfaces/transaction.interface';
 import { transactionsApi } from '../api/transactions.api';
 
@@ -26,31 +27,45 @@ export default function TransactionsPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [isExporting, setIsExporting] = useState(false);
 
-  useEffect(() => {
-    let isMounted = true;
-    setIsLoading(true);
+  const fetchTransactions = useCallback((page: number) => {
     transactionsApi
-      .getTransactions(currentPage, 10)
+      .getTransactions(page, 10)
       .send()
       .then((res) => {
-        if (isMounted) {
-          setTransactions(res.data);
-          setTotalPages(res.totalPages);
-          setTotalCount(res.total);
-          setIsLoading(false);
-        }
+        setTransactions(res.data);
+        setTotalPages(res.totalPages);
+        setTotalCount(res.total);
+        setIsLoading(false);
       })
       .catch(() => {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        setIsLoading(false);
       });
+  }, []);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [currentPage]);
+  const handlePageChange = (page: number) => {
+    setIsLoading(true);
+    setCurrentPage(page);
+  };
+
+  useEffect(() => {
+    fetchTransactions(currentPage);
+  }, [currentPage, fetchTransactions]);
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const res = await transactionsApi.exportTransactions('csv').send();
+      if (res && res.data) {
+        downloadFile(res.data, res.filename || 'transactions-export.csv');
+      }
+    } catch (err) {
+      console.error('Failed to export transactions:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const columns: Column<TransactionItem>[] = [
     {
@@ -193,8 +208,10 @@ export default function TransactionsPage() {
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
+              onClick={handleExport}
+              disabled={isExporting}
             >
-              {t('transactions.actions.export')}
+              {isExporting ? 'Exporting...' : t('transactions.actions.export')}
             </Button>
           </div>
         </div>
@@ -213,7 +230,7 @@ export default function TransactionsPage() {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={setCurrentPage}
+          onPageChange={handlePageChange}
           previousLabel={t('transactions.pagination.previous')}
           nextLabel={t('transactions.pagination.next')}
         />

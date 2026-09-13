@@ -105,9 +105,36 @@ const initialUsers: UserItem[] = [
   },
 ];
 
-let usersStore: UserItem[] = [...initialUsers];
+const usersStore: UserItem[] = [...initialUsers];
 
 export const usersMock = defineMock({
+  '[GET]/api/users/export': ({ query }) => {
+    const format = (query?.format as string) || 'csv';
+    if (format === 'json') {
+      return {
+        data: JSON.stringify(usersStore, null, 2),
+        filename: 'users-export.json',
+        total: usersStore.length,
+      };
+    }
+    const headers = ['No', 'Username', 'First Name', 'Last Name', 'Email', 'Role', 'Status'];
+    const rows = usersStore.map((u, idx) => [
+      idx + 1,
+      `"${u.username}"`,
+      `"${u.firstName || ''}"`,
+      `"${u.lastName || ''}"`,
+      `"${u.email}"`,
+      `"${u.role}"`,
+      `"${u.status}"`,
+    ]);
+    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
+    return {
+      data: csvContent,
+      filename: 'users-export.csv',
+      total: usersStore.length,
+    };
+  },
+
   '[GET]/api/users': ({ query }) => {
     let filtered = usersStore;
     if (query.search) {

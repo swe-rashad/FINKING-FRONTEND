@@ -32,8 +32,10 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             const stored = localStorage.getItem(STORAGE_KEY);
             if (stored !== null) {
                 const isCollapsed = stored === 'true';
-                setCollapsed(isCollapsed);
                 globalCollapsed = isCollapsed;
+                queueMicrotask(() => {
+                    setCollapsed(isCollapsed);
+                });
             }
         } catch { }
     }, []);

@@ -24,21 +24,6 @@ export function Input({
         }
     };
 
-    const PasswordInputEye = () => {
-        return (
-            <div
-                onClick={setPasswordType}
-                className="absolute h-12 pr-4 flex items-center right-0 -translate-y-1/2 top-1/2 cursor-pointer select-none"
-            >
-                {inputType === inputTypesEnum.Password ? (
-                    <Image alt="closed eye icon" src={ClosedEyeIcon} />
-                ) : (
-                    <Image alt="open eye icon" src={OpenEyeIcon} />
-                )}
-            </div>
-        );
-    };
-
     const displayLabel = label ?? placeholder;
 
     return (
@@ -57,7 +42,19 @@ export function Input({
                     onChange={onChange}
                     {...rest}
                 />
-                {type === inputTypesEnum.Password ? <PasswordInputEye /> : null}
+                {type === inputTypesEnum.Password ? (
+                    <button
+                        type="button"
+                        onClick={setPasswordType}
+                        className="absolute h-12 pr-4 flex items-center right-0 -translate-y-1/2 top-1/2 cursor-pointer select-none bg-transparent border-none"
+                    >
+                        {inputType === inputTypesEnum.Password ? (
+                            <Image alt="closed eye icon" src={ClosedEyeIcon} />
+                        ) : (
+                            <Image alt="open eye icon" src={OpenEyeIcon} />
+                        )}
+                    </button>
+                ) : null}
             </div>
         </div>
     );

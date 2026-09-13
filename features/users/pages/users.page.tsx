@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -13,7 +14,9 @@ import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
 import EditIcon from '@/features/dashboard/components/icons/EditIcon';
 import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
 import { useUsers } from '../hooks/useUsers';
+import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
+import { downloadFile } from '@/shared/utils/download';
 import type { UserItem } from '../interfaces/user.interface';
 
 export async function getStaticProps() {
@@ -40,6 +43,22 @@ export default function UsersPage() {
     createUser,
     updateUser,
   } = useUsers();
+
+  const [isExporting, setIsExporting] = useState(false);
+
+  const handleExport = async () => {
+    try {
+      setIsExporting(true);
+      const res = await usersApi.exportUsers('csv').send();
+      if (res && res.data) {
+        downloadFile(res.data, res.filename || 'users-export.csv');
+      }
+    } catch (err) {
+      console.error('Failed to export users:', err);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   const columns: Column<UserItem>[] = [
     {
@@ -185,8 +204,10 @@ export default function UsersPage() {
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
+              onClick={handleExport}
+              disabled={isExporting}
             >
-              {t('users.actions.export')}
+              {isExporting ? 'Exporting...' : t('users.actions.export')}
             </Button>
 
             <Button

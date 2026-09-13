@@ -44,7 +44,6 @@ export default function StatisticsPage() {
 
   useEffect(() => {
     let isMounted = true;
-    setIsLoading(true);
     statisticsApi
       .getStatistics()
       .send()

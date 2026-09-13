@@ -26,22 +26,25 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (user) {
-      setUsername(user.username);
-      setFirstName(user.firstName);
-      setLastName(user.lastName);
-      setEmail(user.email);
-      setRole(user.role);
-      setStatus(user.status);
-    } else {
-      setUsername('');
-      setFirstName('');
-      setLastName('');
-      setEmail('');
-      setRole('Customer');
-      setStatus('Active');
-    }
-    setError(null);
+    if (!isOpen) return;
+    queueMicrotask(() => {
+      if (user) {
+        setUsername(user.username);
+        setFirstName(user.firstName);
+        setLastName(user.lastName);
+        setEmail(user.email);
+        setRole(user.role);
+        setStatus(user.status);
+      } else {
+        setUsername('');
+        setFirstName('');
+        setLastName('');
+        setEmail('');
+        setRole('Customer');
+        setStatus('Active');
+      }
+      setError(null);
+    });
   }, [user, isOpen]);
 
   if (!isOpen) {
