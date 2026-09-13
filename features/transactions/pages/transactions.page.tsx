@@ -199,7 +199,7 @@ export default function TransactionsPage() {
   return (
     <DashboardLayout>
       <Head>
-        <title>{`${t('transactions.title')} | FINKING`}</title>
+        <title>{t('transactions.title')}</title>
       </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-2">

@@ -17,7 +17,7 @@ export default function NotFoundPage() {
   return (
     <>
       <Head>
-        <title>404 - {t('errors.notFound.heading')} | Finking</title>
+        <title>404 - {t('errors.notFound.heading')}</title>
       </Head>
 
       <main className="min-h-screen flex flex-col p-6 sm:p-10 bg-white overflow-hidden">

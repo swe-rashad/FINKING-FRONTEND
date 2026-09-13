@@ -53,7 +53,7 @@ export default function LoginPage() {
   return (
     <GuestGuard>
       <Head>
-        <title>{`${t('login.title')} | FINKING`}</title>
+        <title>{t('login.title')}</title>
       </Head>
       <AuthLayout>
         <div className="flex w-full justify-center">

@@ -72,7 +72,7 @@ export default function TransactionDetailsPage() {
   return (
     <DashboardLayout>
       <Head>
-        <title>{`${transaction.id} - ${t('transactionDetails.title')} | FINKING`}</title>
+        <title>{`${transaction.id} - ${t('transactionDetails.title')}`}</title>
       </Head>
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         {/* Breadcrumb */}
