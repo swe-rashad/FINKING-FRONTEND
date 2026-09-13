@@ -5,6 +5,7 @@ import { useClickOutside } from '@/shared/hooks/useClickOutside';
 import UserIcon from '@/features/dashboard/components/icons/UserIcon';
 import ChevronDownIcon from '@/features/dashboard/components/icons/ChevronDownIcon';
 import LogoutIcon from '@/features/dashboard/components/icons/LogoutIcon';
+import { tokenService } from '@/core/auth/token.service';
 
 interface UserProfileDropdownProps {
   name?: string;
@@ -27,7 +28,8 @@ export default function UserProfileDropdown({
 
   function handleLogout() {
     setOpen(false);
-    router.push('/auth/login');
+    tokenService.clearTokens();
+    router.replace('/auth/login');
   }
 
   return (

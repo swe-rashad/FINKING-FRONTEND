@@ -1,4 +1,6 @@
-import { useTranslations } from 'next-intl';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
+import { tokenService } from '@/core/auth/token.service';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 
@@ -8,11 +10,22 @@ export async function getStaticProps() {
 }
 
 export default function HomePage() {
-  const t = useTranslations('shared');
+  const router = useRouter();
+
+  useEffect(() => {
+    if (tokenService.isAuthenticated()) {
+      router.replace('/dashboard/statistics');
+    } else {
+      router.replace('/auth/login');
+    }
+  }, [router]);
 
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-3xl font-bold">{t('home.welcome')}</h1>
-    </main>
+    <div className="flex min-h-screen w-full items-center justify-center bg-[#F9F9F9]">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-primary-500" />
+        <span className="text-xs font-medium text-gray-400">Redirecting...</span>
+      </div>
+    </div>
   );
 }

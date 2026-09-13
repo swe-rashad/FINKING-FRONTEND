@@ -4,6 +4,11 @@ import { createAlovaMockAdapter } from '@alova/mock';
 import { usersMock } from '@/features/users/mocks/users.mock';
 import { transactionsMock } from '@/features/transactions/mocks/transactions.mock';
 import { statisticsMock } from '@/features/statistics/mocks/statistics.mock';
+import { authMock } from '@/features/auth/mocks/auth.mock';
+import {
+  authRequestInterceptor,
+  authResponseInterceptor,
+} from '@/shared/interceptors';
 
 export const MOCK_STORAGE_KEY = 'ENABLE_MOCKS';
 
@@ -43,7 +48,7 @@ if (typeof window !== 'undefined') {
 const fetchAdapter = adapterFetch();
 
 const mockAdapter = createAlovaMockAdapter(
-  [usersMock, transactionsMock, statisticsMock],
+  [authMock, usersMock, transactionsMock, statisticsMock],
   {
     delay: 80,
     httpAdapter: fetchAdapter,
@@ -61,10 +66,6 @@ const dynamicAdapter: ReturnType<typeof adapterFetch> = (elements, method) => {
 export const alovaInstance = createAlova({
   baseURL: process.env.NEXT_PUBLIC_API_URL || '',
   requestAdapter: dynamicAdapter,
-  responded: async (response: Response) => {
-    if (response && typeof response.json === 'function') {
-      return await response.json();
-    }
-    return response;
-  },
+  beforeRequest: authRequestInterceptor,
+  responded: authResponseInterceptor,
 });
