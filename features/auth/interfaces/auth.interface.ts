@@ -8,6 +8,14 @@ export interface AuthTokens {
   refreshToken: string;
 }
 
+export interface UserProfile {
+  id: number;
+  name: string;
+  email: string;
+  company: string;
+  role: string;
+}
+
 export interface AuthResponse extends AuthTokens {
   user: {
     id: number;

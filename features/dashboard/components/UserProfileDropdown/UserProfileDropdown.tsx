@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
 import { useClickOutside } from '@/shared/hooks/useClickOutside';
@@ -6,6 +6,8 @@ import UserIcon from '@/features/dashboard/components/icons/UserIcon';
 import ChevronDownIcon from '@/features/dashboard/components/icons/ChevronDownIcon';
 import LogoutIcon from '@/features/dashboard/components/icons/LogoutIcon';
 import { tokenService } from '@/core/auth/token.service';
+import { authApi } from '@/features/auth/api/auth.api';
+import type { UserProfile } from '@/features/auth/interfaces/auth.interface';
 
 interface UserProfileDropdownProps {
   name?: string;
@@ -18,11 +20,24 @@ export default function UserProfileDropdown({
 }: UserProfileDropdownProps) {
   const t = useTranslations('dashboard');
   const [open, setOpen] = useState(false);
+  const [profile, setProfile] = useState<UserProfile | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-  const displayName = name ?? t('layout.userProfile.defaultName');
-  const displayCompany = company ?? t('layout.userProfile.defaultCompany');
+  useEffect(() => {
+    authApi
+      .getProfile()
+      .send()
+      .then((res) => {
+        if (res && res.name) {
+          setProfile(res);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
+  const displayName = name ?? profile?.name ?? t('layout.userProfile.defaultName');
+  const displayCompany = company ?? profile?.company ?? t('layout.userProfile.defaultCompany');
 
   useClickOutside(ref, useCallback(() => setOpen(false), []));
 

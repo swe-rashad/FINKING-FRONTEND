@@ -2,9 +2,19 @@ import { defineMock } from '@alova/mock';
 import type { AuthResponse, AuthTokens } from '../interfaces/auth.interface';
 
 export const authMock = defineMock({
+  '[GET]/api/auth/profile': () => {
+    return {
+      id: 1,
+      name: 'Rashad Yusifli',
+      email: 'rashad.yusifli@finking.com',
+      company: 'Finking Financial',
+      role: 'Administrator',
+    };
+  },
+
   '[POST]/api/auth/login': ({ data }) => {
     const timestamp = Date.now();
-    const email = data?.email || 'user@finking.com';
+    const email = data?.email || 'rashad.yusifli@finking.com';
     const username = email.split('@')[0];
 
     const response: AuthResponse = {

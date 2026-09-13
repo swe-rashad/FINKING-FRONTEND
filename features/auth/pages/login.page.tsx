@@ -18,7 +18,7 @@ export default function LoginPage() {
   const t = useTranslations('auth');
   const router = useRouter();
 
-  const [email, setEmail] = useState('user@finking.com');
+  const [email, setEmail] = useState('rashad.yusifli@finking.com');
   const [password, setPassword] = useState('Password123!');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);

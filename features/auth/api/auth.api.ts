@@ -3,6 +3,7 @@ import type {
   LoginCredentials,
   AuthResponse,
   AuthTokens,
+  UserProfile,
 } from '../interfaces/auth.interface';
 
 export const authApi = {
@@ -14,5 +15,9 @@ export const authApi = {
     return alovaInstance.Post<AuthTokens>('/api/auth/refresh', {
       refreshToken,
     });
+  },
+
+  getProfile() {
+    return alovaInstance.Get<UserProfile>('/api/auth/profile');
   },
 };
