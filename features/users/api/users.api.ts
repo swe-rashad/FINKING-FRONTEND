@@ -19,7 +19,8 @@ export const usersApi = {
       params: {
         page,
         limit,
-        ...(filters?.search ? { search: filters.search } : {}),
+        ...(filters?.name ? { name: filters.name } : {}),
+        ...(filters?.email ? { email: filters.email } : {}),
         ...(filters?.role && filters.role !== 'all' ? { role: filters.role } : {}),
         ...(filters?.status && filters.status !== 'all' ? { status: filters.status } : {}),
       },

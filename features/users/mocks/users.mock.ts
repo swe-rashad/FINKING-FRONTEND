@@ -137,15 +137,19 @@ export const usersMock = defineMock({
 
   '[GET]/api/users': ({ query }) => {
     let filtered = [...usersStore];
-    if (query.search) {
-      const search = String(query.search).toLowerCase();
+    if (query.name) {
+      const name = String(query.name).toLowerCase();
       filtered = filtered.filter(
         (u) =>
-          u.username.toLowerCase().includes(search) ||
-          u.firstName.toLowerCase().includes(search) ||
-          u.lastName.toLowerCase().includes(search) ||
-          u.email.toLowerCase().includes(search)
+          u.username.toLowerCase().includes(name) ||
+          u.firstName.toLowerCase().includes(name) ||
+          u.lastName.toLowerCase().includes(name) ||
+          `${u.firstName} ${u.lastName}`.toLowerCase().includes(name)
       );
+    }
+    if (query.email) {
+      const email = String(query.email).toLowerCase();
+      filtered = filtered.filter((u) => u.email.toLowerCase().includes(email));
     }
     if (query.role && query.role !== 'all') {
       const role = String(query.role).toLowerCase();

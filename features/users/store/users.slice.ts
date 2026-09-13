@@ -22,7 +22,8 @@ export interface UsersState {
 }
 
 const defaultFilters: UsersFilters = {
-  search: '',
+  name: '',
+  email: '',
   role: 'all',
   status: 'all',
 };

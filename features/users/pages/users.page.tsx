@@ -54,7 +54,8 @@ export default function UsersPage() {
 
   const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const hasActiveFilters = Boolean(
-    filters.search ||
+    filters.name ||
+      filters.email ||
       (filters.role && filters.role !== 'all') ||
       (filters.status && filters.status !== 'all')
   );

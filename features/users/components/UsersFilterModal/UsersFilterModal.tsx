@@ -22,16 +22,18 @@ export function UsersFilterModal({
   onReset,
 }: UsersFilterModalProps) {
   const t = useTranslations('dashboard');
-  const [search, setSearch] = useState(filters.search);
-  const [role, setRole] = useState(filters.role);
-  const [status, setStatus] = useState(filters.status);
+  const [name, setName] = useState(filters.name || '');
+  const [email, setEmail] = useState(filters.email || '');
+  const [role, setRole] = useState(filters.role || 'all');
+  const [status, setStatus] = useState(filters.status || 'all');
 
   useEffect(() => {
     if (!isOpen) return;
     queueMicrotask(() => {
-      setSearch(filters.search);
-      setRole(filters.role);
-      setStatus(filters.status);
+      setName(filters.name || '');
+      setEmail(filters.email || '');
+      setRole(filters.role || 'all');
+      setStatus(filters.status || 'all');
     });
   }, [isOpen, filters]);
 
@@ -42,14 +44,16 @@ export function UsersFilterModal({
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
     onApply({
-      search: search.trim(),
+      name: name.trim(),
+      email: email.trim(),
       role,
       status,
     });
   };
 
   const handleReset = () => {
-    setSearch('');
+    setName('');
+    setEmail('');
     setRole('all');
     setStatus('all');
     onReset();
@@ -89,51 +93,63 @@ export function UsersFilterModal({
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <Input
-            id="filter-search"
-            name="search"
+            id="filter-name"
+            name="name"
             type={inputTypesEnum.Text}
-            label={t('users.filterModal.searchLabel')}
-            placeholder={t('users.filterModal.searchPlaceholder')}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            label={t('users.filterModal.nameLabel')}
+            placeholder={t('users.filterModal.namePlaceholder')}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
 
-          <div>
-            <label
-              htmlFor="filter-role"
-              className="block text-xs font-semibold text-gray-700 mb-1.5"
-            >
-              {t('users.filterModal.roleLabel')}
-            </label>
-            <select
-              id="filter-role"
-              value={role}
-              onChange={(e) => setRole(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
-            >
-              <option value="all">{t('users.filterModal.allRoles')}</option>
-              <option value="Customer">{t('users.roles.customer')}</option>
-              <option value="Employee">{t('users.roles.employee')}</option>
-            </select>
-          </div>
+          <Input
+            id="filter-email"
+            name="email"
+            type={inputTypesEnum.Email}
+            label={t('users.filterModal.emailLabel')}
+            placeholder={t('users.filterModal.emailPlaceholder')}
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
 
-          <div>
-            <label
-              htmlFor="filter-status"
-              className="block text-xs font-semibold text-gray-700 mb-1.5"
-            >
-              {t('users.filterModal.statusLabel')}
-            </label>
-            <select
-              id="filter-status"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
-              className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
-            >
-              <option value="all">{t('users.filterModal.allStatuses')}</option>
-              <option value="Active">{t('users.status.active')}</option>
-              <option value="Blocked">{t('users.status.blocked')}</option>
-            </select>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label
+                htmlFor="filter-role"
+                className="block text-xs font-semibold text-gray-700 mb-1.5"
+              >
+                {t('users.filterModal.roleLabel')}
+              </label>
+              <select
+                id="filter-role"
+                value={role}
+                onChange={(e) => setRole(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
+              >
+                <option value="all">{t('users.filterModal.allRoles')}</option>
+                <option value="Customer">{t('users.roles.customer')}</option>
+                <option value="Employee">{t('users.roles.employee')}</option>
+              </select>
+            </div>
+
+            <div>
+              <label
+                htmlFor="filter-status"
+                className="block text-xs font-semibold text-gray-700 mb-1.5"
+              >
+                {t('users.filterModal.statusLabel')}
+              </label>
+              <select
+                id="filter-status"
+                value={status}
+                onChange={(e) => setStatus(e.target.value)}
+                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
+              >
+                <option value="all">{t('users.filterModal.allStatuses')}</option>
+                <option value="Active">{t('users.status.active')}</option>
+                <option value="Blocked">{t('users.status.blocked')}</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-2">
