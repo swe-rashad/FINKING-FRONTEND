@@ -1,0 +1,8 @@
+{
+  "tailwindCSS.experimental.configFile": "styles/globals.css",
+  "tailwindCSS.classAttributes": ["class", "className"],
+  "tailwindCSS.emmetCompletions": true,
+  "editor.quickSuggestions": {
+    "strings": "on"
+  }
+}

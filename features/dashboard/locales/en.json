@@ -1,0 +1,134 @@
+{
+  "layout": {
+    "products": "Products",
+    "logoAlt": "FINKING Logo",
+    "logoMarkAlt": "FINKING Logo Mark",
+    "sidebar": {
+      "expand": "Expand sidebar",
+      "collapse": "Collapse sidebar"
+    },
+    "navs": {
+      "statistics": "Statistics",
+      "users": "Users",
+      "transactions": "Transactions"
+    },
+    "userProfile": {
+      "logout": "Logout",
+      "defaultName": "Murad Hasanov",
+      "defaultCompany": "Cırtdan LLC"
+    }
+  },
+  "users": {
+    "title": "Users",
+    "rowCount": "Row count: {count}",
+    "actions": {
+      "filter": "Filter",
+      "export": "Export",
+      "createUser": "Create user",
+      "editUser": "Edit user",
+      "edit": "Edit",
+      "save": "Save",
+      "cancel": "Cancel",
+      "delete": "Delete"
+    },
+    "columns": {
+      "no": "№",
+      "username": "Username",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "email": "Email",
+      "role": "Role",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "blocked": "Blocked"
+    },
+    "roles": {
+      "customer": "Customer",
+      "employee": "Employee"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    },
+    "modal": {
+      "createTitle": "Create New User",
+      "editTitle": "Edit User",
+      "usernameLabel": "Username",
+      "firstNameLabel": "First name",
+      "lastNameLabel": "Last name",
+      "emailLabel": "Email address",
+      "roleLabel": "Role",
+      "statusLabel": "Status",
+      "submitCreate": "Create User",
+      "submitEdit": "Save Changes"
+    }
+  },
+  "transactions": {
+    "title": "Transactions",
+    "rowCount": "Row count: {count}",
+    "actions": {
+      "filter": "Filter",
+      "export": "Export"
+    },
+    "columns": {
+      "no": "№",
+      "id": "Transaction ID",
+      "sender": "Sender",
+      "receiver": "Receiver",
+      "amount": "Amount",
+      "date": "Date",
+      "type": "Type",
+      "status": "Status"
+    },
+    "status": {
+      "completed": "Completed",
+      "pending": "Pending",
+      "failed": "Failed"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  },
+  "statistics": {
+    "title": "Statistics",
+    "rowCount": "Row count: {count}",
+    "actions": {
+      "filter": "Filter",
+      "export": "Export"
+    },
+    "columns": {
+      "no": "№",
+      "category": "Category",
+      "users": "Users",
+      "transactions": "Transactions",
+      "revenue": "Revenue",
+      "growth": "Growth",
+      "status": "Status"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "kpi": {
+      "totalRevenue": "Total Revenue",
+      "totalTransactions": "Total Transactions",
+      "activeUsers": "Active Users",
+      "avgTransaction": "Avg. Transaction"
+    },
+    "charts": {
+      "revenueTrend": "Revenue Overview",
+      "revenueSubtitle": "Monthly revenue performance (USD)",
+      "categoryBreakdown": "Category Distribution",
+      "categorySubtitle": "Transaction volume by segment",
+      "thisMonth": "vs last month"
+    },
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next"
+    }
+  }
+}

@@ -1,0 +1,1 @@
+export { default, getStaticProps } from '@/features/statistics/pages/statistics.page';

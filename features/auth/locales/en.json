@@ -1,0 +1,14 @@
+{
+  "login": {
+    "title": "Login",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "submit": "Submit"
+  },
+  "register": {
+    "title": "Create account",
+    "emailPlaceholder": "Email",
+    "passwordPlaceholder": "Password",
+    "submit": "Create account"
+  }
+}
