@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -21,6 +22,7 @@ export async function getStaticProps() {
 }
 
 export default function TransactionsPage() {
+  const router = useRouter();
   const t = useTranslations('dashboard');
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -165,7 +167,7 @@ export default function TransactionsPage() {
       header: '',
       align: 'right',
       width: '3rem',
-      render: () => (
+      render: (item) => (
         <div className="flex items-center justify-end w-full sm:w-auto">
           <Button
             variant="outline"
@@ -173,6 +175,10 @@ export default function TransactionsPage() {
             icon={<ArrowRightIcon size={14} />}
             iconPosition="right"
             className="w-full sm:hidden text-gray-700"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/dashboard/transactions/${item.id}`);
+            }}
           >
             Details
           </Button>
@@ -180,6 +186,10 @@ export default function TransactionsPage() {
             type="button"
             title="Details"
             aria-label="View transaction details"
+            onClick={(e) => {
+              e.stopPropagation();
+              router.push(`/dashboard/transactions/${item.id}`);
+            }}
             className="hidden sm:flex w-8 h-8 rounded-lg items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors ml-auto cursor-pointer shrink-0"
           >
             <ArrowRightIcon size={16} />
@@ -225,6 +235,7 @@ export default function TransactionsPage() {
           data={transactions}
           isLoading={isLoading}
           keyExtractor={(item) => item.id}
+          onRowClick={(item) => router.push(`/dashboard/transactions/${item.id}`)}
         />
 
         <Pagination

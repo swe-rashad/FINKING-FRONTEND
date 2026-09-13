@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
 import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
@@ -25,6 +26,7 @@ export async function getStaticProps() {
 
 export default function UsersPage() {
   const t = useTranslations('dashboard');
+  const router = useRouter();
   const {
     users,
     totalCount,
@@ -209,6 +211,7 @@ export default function UsersPage() {
           data={users}
           isLoading={isLoading}
           keyExtractor={(item) => item.id}
+          onRowClick={(item) => router.push(`/dashboard/users/${item.id}`)}
         />
 
         <Pagination

@@ -1,5 +1,8 @@
 import { alovaInstance } from '@/core/api/alova';
-import type { TransactionItem } from '../interfaces/transaction.interface';
+import type {
+  TransactionItem,
+  TransactionDetailsItem,
+} from '../interfaces/transaction.interface';
 
 export interface PaginatedTransactionsResponse {
   data: TransactionItem[];
@@ -20,6 +23,10 @@ export const transactionsApi = {
     return alovaInstance.Get<PaginatedTransactionsResponse>('/api/transactions', {
       params: { page, limit },
     });
+  },
+
+  getTransactionById(id: string) {
+    return alovaInstance.Get<TransactionDetailsItem>(`/api/transactions/${id}`);
   },
 
   exportTransactions(format: 'csv' | 'json' = 'csv') {

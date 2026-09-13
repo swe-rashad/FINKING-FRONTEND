@@ -114,6 +114,32 @@ export const transactionsMock = defineMock({
     };
   },
 
+  '[GET]/api/transactions/{id}': ({ params }) => {
+    const txn =
+      mockTransactionsData.find((t) => t.id === params.id) ||
+      mockTransactionsData[0];
+
+    return {
+      ...txn,
+      currency: 'AZN',
+      merchantName: `${txn.receiver} (topup)`,
+      amount: txn.amount.replace(/[^0-9.]/g, '') || '20',
+      operationType: 'Purchase',
+      statusDescription: 'Payment approved',
+      cardMasked: '523915******8748',
+      rrn: '602912253898',
+      operationId: '260129022658452734',
+      merchantId: '1201563',
+      orderId: '56738073',
+      subMerchantId: '202006593',
+      mcc: '6012',
+      terminalId: 'POST6593',
+      reversal: 'YES',
+      terminalSerialId: 'V1E03307',
+      threeDSecure: 'NO',
+    };
+  },
+
   '[GET]/api/transactions': ({ query }) => {
     return paginateMock(mockTransactionsData, query);
   },

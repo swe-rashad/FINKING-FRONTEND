@@ -12,6 +12,18 @@ export interface UserItem {
   status: UserStatus;
 }
 
+export interface UserDetailsItem extends UserItem {
+  registeredDate?: string;
+  phone?: string;
+  accountTier?: string;
+  kycStatus?: string;
+  lastLogin?: string;
+  ipAddress?: string;
+  country?: string;
+  twoFactorEnabled?: string;
+  branch?: string;
+}
+
 export type CreateUserDto = Omit<UserItem, 'id' | 'no'>;
 export type UpdateUserDto = Partial<CreateUserDto>;
 

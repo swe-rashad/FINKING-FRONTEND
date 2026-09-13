@@ -11,3 +11,21 @@ export interface TransactionItem {
   type: TransactionType;
   status: TransactionStatus;
 }
+
+export interface TransactionDetailsItem extends TransactionItem {
+  operationId?: string;
+  merchantId?: string;
+  merchantName?: string;
+  subMerchantId?: string;
+  orderId?: string;
+  mcc?: string;
+  terminalId?: string;
+  terminalSerialId?: string;
+  cardMasked?: string;
+  rrn?: string;
+  reversal?: string;
+  threeDSecure?: string;
+  statusDescription?: string;
+  currency?: string;
+  operationType?: string;
+}

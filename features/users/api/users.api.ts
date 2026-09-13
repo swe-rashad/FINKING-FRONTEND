@@ -1,6 +1,7 @@
 import { alovaInstance } from '@/core/api/alova';
 import type {
   UserItem,
+  UserDetailsItem,
   PaginatedResponse,
   CreateUserDto,
   UpdateUserDto,
@@ -17,6 +18,10 @@ export const usersApi = {
     return alovaInstance.Get<PaginatedResponse<UserItem>>('/api/users', {
       params: { page, limit, search },
     });
+  },
+
+  getUserById(id: number | string) {
+    return alovaInstance.Get<UserDetailsItem>(`/api/users/${id}`);
   },
 
   createUser(data: CreateUserDto) {

@@ -135,6 +135,23 @@ export const usersMock = defineMock({
     };
   },
 
+  '[GET]/api/users/{id}': ({ params }) => {
+    const numericId = Number(params.id);
+    const user = usersStore.find((u) => u.id === numericId) || usersStore[0];
+    return {
+      ...user,
+      registeredDate: '12 Jan 2026, 14:20:18',
+      phone: '+49 152 2345678',
+      accountTier: 'Standard Corporate',
+      kycStatus: 'Verified (Level 2)',
+      lastLogin: '14 Sep 2026, 01:15:22',
+      ipAddress: '194.67.210.14',
+      country: 'Germany (DE)',
+      twoFactorEnabled: 'Enabled (SMS + App)',
+      branch: 'Frankfurt Central Branch',
+    };
+  },
+
   '[GET]/api/users': ({ query }) => {
     let filtered = usersStore;
     if (query.search) {
