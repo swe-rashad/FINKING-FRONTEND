@@ -29,9 +29,9 @@ export const transactionsApi = {
     return alovaInstance.Get<TransactionDetailsItem>(`/api/transactions/${id}`);
   },
 
-  exportTransactions(format: 'csv' | 'json' = 'csv') {
+  exportTransactions(format: 'csv' | 'json' = 'csv', email?: string) {
     return alovaInstance.Get<TransactionExportResponse>('/api/transactions/export', {
-      params: { format },
+      params: { format, email },
     });
   },
 };

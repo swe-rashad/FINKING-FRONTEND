@@ -6,8 +6,8 @@ import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Button } from '@/shared/components/common/button';
+import { useToast } from '@/shared/components/common/Toast';
 import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
-import RefundIcon from '@/features/dashboard/components/icons/RefundIcon';
 import { transactionsApi } from '../api/transactions.api';
 import type { TransactionDetailsItem } from '../interfaces/transaction.interface';
 
@@ -27,6 +27,7 @@ export default function TransactionDetailsPage() {
   const t = useTranslations('dashboard');
   const router = useRouter();
   const { id } = router.query;
+  const { showToast } = useToast();
 
   const [transaction, setTransaction] = useState<TransactionDetailsItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -49,10 +50,10 @@ export default function TransactionDetailsPage() {
   if (isLoading || !transaction) {
     return (
       <DashboardLayout>
-        <div className="w-full px-4 sm:px-8 pb-12 flex flex-col">
+        <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
           <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
             <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-3" />
-            Loading transaction details...
+            {t('transactionDetails.loading')}
           </div>
         </div>
       </DashboardLayout>
@@ -60,17 +61,17 @@ export default function TransactionDetailsPage() {
   }
 
   const handleShareReceipt = () => {
-    alert(`Receipt for transaction ${transaction.id} ready to share.`);
-  };
-
-  const handleRefund = () => {
-    alert(`Initiating refund request for transaction ${transaction.id}.`);
+    showToast({
+      type: 'success',
+      title: t('transactionDetails.title'),
+      message: t('transactionDetails.receiptShared', { id: transaction.id }),
+    });
   };
 
   return (
     <DashboardLayout>
-      <div className="w-full px-4 sm:px-8 pb-12 flex flex-col max-w-7xl mx-auto">
-        {/* Breadcrumb matching screenshot: Tranzaksiya > Tranzaksiya detalları */}
+      <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
+        {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs sm:text-sm font-medium mb-4 text-gray-500">
           <Link
             href="/dashboard/transactions"
@@ -82,14 +83,13 @@ export default function TransactionDetailsPage() {
           <span className="text-gray-800 font-normal">{t('transactionDetails.breadcrumbCurrent')}</span>
         </nav>
 
-        {/* Header with Title and Screenshot-exact Action Buttons */}
+        {/* Header with Title and Share Receipt action */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
             {t('transactionDetails.title')}
           </h1>
 
           <div className="flex items-center gap-3">
-            {/* Çeki paylaş / Share receipt button */}
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
@@ -98,16 +98,6 @@ export default function TransactionDetailsPage() {
             >
               {t('transactionDetails.actions.shareReceipt')}
             </Button>
-
-            {/* Refund button with exact peach background styling */}
-            <button
-              type="button"
-              onClick={handleRefund}
-              className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 cursor-pointer bg-[#FFF2EC] text-[#FF5A1F] hover:bg-[#FFE6DA] border border-[#FFD9C7] shadow-xs active:scale-98"
-            >
-              <RefundIcon size={16} className="text-[#FF5A1F]" />
-              <span>{t('transactionDetails.actions.refund')}</span>
-            </button>
           </div>
         </div>
 
@@ -134,7 +124,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.currency')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.currency || 'AZN'}
+                  {transaction.currency || 'EUR'}
                 </p>
               </div>
 
@@ -152,7 +142,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.amount')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.amount || '20'}
+                  {transaction.amount || '20.00'}
                 </p>
               </div>
 
@@ -161,7 +151,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.operationType')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.operationType || 'Purchase'}
+                  {transaction.operationType || t('transactionDetails.values.purchase')}
                 </p>
               </div>
 
@@ -171,7 +161,7 @@ export default function TransactionDetailsPage() {
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
                   {transaction.status === 'Completed'
-                    ? 'Approved'
+                    ? t('transactionDetails.values.approved')
                     : transaction.status}
                 </p>
               </div>
@@ -190,7 +180,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.statusDescription')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.statusDescription || 'Payment approved'}
+                  {transaction.statusDescription || t('transactionDetails.values.paymentApproved')}
                 </p>
               </div>
 
@@ -271,7 +261,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.reversal')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.reversal || 'YES'}
+                  {transaction.reversal || t('transactionDetails.values.yes')}
                 </p>
               </div>
 
@@ -289,7 +279,7 @@ export default function TransactionDetailsPage() {
                   {t('transactionDetails.fields.threeDSecure')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {transaction.threeDSecure || 'NO'}
+                  {transaction.threeDSecure || t('transactionDetails.values.no')}
                 </p>
               </div>
             </div>

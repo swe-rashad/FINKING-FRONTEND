@@ -6,6 +6,7 @@ import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Button } from '@/shared/components/common/button';
+import { useToast } from '@/shared/components/common/Toast';
 import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import EditIcon from '@/features/dashboard/components/icons/EditIcon';
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
@@ -30,6 +31,7 @@ export default function UserDetailsPage() {
   const t = useTranslations('dashboard');
   const router = useRouter();
   const { id } = router.query;
+  const { showToast } = useToast();
 
   const [user, setUser] = useState<UserDetailsItem | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -56,6 +58,11 @@ export default function UserDetailsPage() {
       const updated = await usersApi.updateUser(user.id, data).send();
       setUser((prev) => (prev ? { ...prev, ...updated } : prev));
       setIsEditModalOpen(false);
+      showToast({
+        type: 'success',
+        title: t('userDetails.title'),
+        message: 'User updated successfully.',
+      });
     } catch (err) {
       console.error('Failed to update user:', err);
     }
@@ -64,10 +71,10 @@ export default function UserDetailsPage() {
   if (isLoading || !user) {
     return (
       <DashboardLayout>
-        <div className="w-full px-4 sm:px-8 pb-12 flex flex-col">
+        <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
           <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
             <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-3" />
-            Loading user details...
+            {t('userDetails.loading')}
           </div>
         </div>
       </DashboardLayout>
@@ -76,7 +83,7 @@ export default function UserDetailsPage() {
 
   return (
     <DashboardLayout>
-      <div className="w-full px-4 sm:px-8 pb-12 flex flex-col max-w-7xl mx-auto">
+      <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-xs sm:text-sm font-medium mb-4 text-gray-500">
           <Link
@@ -100,7 +107,11 @@ export default function UserDetailsPage() {
               variant="secondary"
               icon={<ExportIcon size={16} />}
               onClick={() => {
-                alert(`User details for ${user.username} shared.`);
+                showToast({
+                  type: 'success',
+                  title: t('userDetails.title'),
+                  message: t('userDetails.detailsShared', { username: user.username }),
+                });
               }}
               className="px-4 py-2.5 bg-white border border-gray-200 text-gray-700 hover:bg-gray-50"
             >
@@ -201,8 +212,8 @@ export default function UserDetailsPage() {
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
                   {user.status === 'Active'
-                    ? 'Verified & Approved'
-                    : 'Account Restricted'}
+                    ? t('userDetails.values.accountActive')
+                    : t('userDetails.values.accountRestricted')}
                 </p>
               </div>
             </div>
@@ -274,7 +285,7 @@ export default function UserDetailsPage() {
                   {t('userDetails.fields.twoFactor')}
                 </p>
                 <p className="text-sm font-semibold text-gray-900">
-                  {user.twoFactorEnabled || 'YES'}
+                  {user.twoFactorEnabled || t('transactionDetails.values.yes')}
                 </p>
               </div>
 

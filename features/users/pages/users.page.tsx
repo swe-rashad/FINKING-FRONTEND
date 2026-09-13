@@ -1,12 +1,13 @@
 import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout } from '@/features/dashboard';
+import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
 import { Button } from '@/shared/components/common/button';
+import { useToast } from '@/shared/components/common/Toast';
 import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
 import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import CreateUserIcon from '@/features/dashboard/components/icons/CreateUserIcon';
@@ -16,7 +17,6 @@ import EditIcon from '@/features/dashboard/components/icons/EditIcon';
 import { useUsers } from '../hooks/useUsers';
 import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
-import { downloadFile } from '@/shared/utils/download';
 import type { UserItem } from '../interfaces/user.interface';
 
 export async function getStaticProps() {
@@ -27,6 +27,7 @@ export async function getStaticProps() {
 export default function UsersPage() {
   const t = useTranslations('dashboard');
   const router = useRouter();
+  const { showToast } = useToast();
   const {
     users,
     totalCount,
@@ -45,20 +46,15 @@ export default function UsersPage() {
     updateUser,
   } = useUsers();
 
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
-      const res = await usersApi.exportUsers('csv').send();
-      if (res && res.data) {
-        downloadFile(res.data, res.filename || 'users-export.csv');
-      }
-    } catch (err) {
-      console.error('Failed to export users:', err);
-    } finally {
-      setIsExporting(false);
-    }
+  const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
+    await usersApi.exportUsers(format, email).send();
+    showToast({
+      type: 'success',
+      title: t('exportModal.title'),
+      message: t('exportModal.toastSuccess'),
+    });
   };
 
   const columns: Column<UserItem>[] = [
@@ -186,10 +182,9 @@ export default function UsersPage() {
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
-              onClick={handleExport}
-              disabled={isExporting}
+              onClick={() => setIsExportModalOpen(true)}
             >
-              {isExporting ? 'Exporting...' : t('users.actions.export')}
+              {t('users.actions.export')}
             </Button>
 
             <Button
@@ -239,6 +234,13 @@ export default function UsersPage() {
               await updateUser(activeUser.id, data);
             }
           }}
+        />
+
+        <ExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          title={t('users.title')}
+          onSubmit={handleExportSubmit}
         />
       </div>
     </DashboardLayout>

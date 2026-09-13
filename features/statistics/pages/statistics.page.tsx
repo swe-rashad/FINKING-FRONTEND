@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout } from '@/features/dashboard';
+import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
 import { Button } from '@/shared/components/common/button';
+import { useToast } from '@/shared/components/common/Toast';
 import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
 import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
@@ -25,22 +26,35 @@ export async function getStaticProps() {
 
 export default function StatisticsPage() {
   const t = useTranslations('dashboard');
+  const { showToast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredPoint, setHoveredPoint] = useState<number | null>(null);
   const [items, setItems] = useState<StatisticItem[]>([]);
   const [monthlyRevenue, setMonthlyRevenue] = useState<MonthlyRevenueItem[]>([]);
   const [categoryDistribution, setCategoryDistribution] = useState<CategoryDistributionItem[]>([]);
   const [kpi, setKpi] = useState({
-    totalRevenue: '$1,054,700',
-    revenueGrowth: '+14.2%',
-    totalTransactions: '260,210',
-    transactionGrowth: '+8.7%',
-    activeUsers: '65,510',
-    userGrowth: '+22.4%',
-    avgTransaction: '$4.05',
-    avgGrowth: '+5.1%',
+    totalRevenue: '€0.00',
+    revenueGrowth: '+0.0%',
+    totalTransactions: '0',
+    transactionGrowth: '+0.0%',
+    activeUsers: '0',
+    userGrowth: '+0.0%',
+    avgTransaction: '€0.00',
+    avgGrowth: '+0.0%',
   });
   const [isLoading, setIsLoading] = useState(true);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+
+  const handleExportSubmit = async (_email: string) => {
+    void _email;
+    // Simulated export request
+    await new Promise((resolve) => setTimeout(resolve, 600));
+    showToast({
+      type: 'success',
+      title: t('exportModal.title'),
+      message: t('exportModal.toastSuccess'),
+    });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -228,6 +242,7 @@ export default function StatisticsPage() {
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
+              onClick={() => setIsExportModalOpen(true)}
             >
               {t('statistics.actions.export')}
             </Button>
@@ -476,6 +491,13 @@ export default function StatisticsPage() {
           onPageChange={setCurrentPage}
           previousLabel={t('statistics.pagination.previous')}
           nextLabel={t('statistics.pagination.next')}
+        />
+
+        <ExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          title={t('statistics.title')}
+          onSubmit={handleExportSubmit}
         />
       </div>
     </DashboardLayout>

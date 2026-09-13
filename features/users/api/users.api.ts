@@ -36,9 +36,9 @@ export const usersApi = {
     return alovaInstance.Delete<UserItem>(`/api/users/${id}`);
   },
 
-  exportUsers(format: 'csv' | 'json' = 'csv') {
+  exportUsers(format: 'csv' | 'json' = 'csv', email?: string) {
     return alovaInstance.Get<UserExportResponse>('/api/users/export', {
-      params: { format },
+      params: { format, email },
     });
   },
 };

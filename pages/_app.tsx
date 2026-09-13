@@ -4,6 +4,7 @@ import { Provider } from "react-redux";
 import { store } from "@/core/store";
 import { NextIntlClientProvider } from "next-intl";
 import { defaultLocale, defaultTimeZone } from "@/core/i18n/config";
+import { ToastProvider } from "@/shared/components/common/Toast";
 
 export default function App({ Component, pageProps }: AppProps) {
   return (
@@ -13,7 +14,9 @@ export default function App({ Component, pageProps }: AppProps) {
         timeZone={defaultTimeZone}
         messages={pageProps.messages ?? {}}
       >
-        <Component {...pageProps} />
+        <ToastProvider>
+          <Component {...pageProps} />
+        </ToastProvider>
       </NextIntlClientProvider>
     </Provider>
   );

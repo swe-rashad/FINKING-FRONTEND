@@ -121,7 +121,7 @@
     },
     "charts": {
       "revenueTrend": "Revenue Overview",
-      "revenueSubtitle": "Monthly revenue performance (USD)",
+      "revenueSubtitle": "Monthly revenue performance (EUR)",
       "categoryBreakdown": "Category Distribution",
       "categorySubtitle": "Transaction volume by segment",
       "thisMonth": "vs last month"
@@ -137,6 +137,8 @@
     "title": "User details",
     "mainDetailsTitle": "Main details",
     "additionalDetailsTitle": "Additional details",
+    "loading": "Loading user details...",
+    "detailsShared": "User details for {username} shared.",
     "actions": {
       "share": "Share details",
       "edit": "Edit user"
@@ -158,6 +160,15 @@
       "ipAddress": "IP address",
       "twoFactor": "2D / 2FA Secure",
       "branch": "Assigned Branch"
+    },
+    "values": {
+      "active": "Active",
+      "verified": "Verified",
+      "unverified": "Unverified",
+      "enabled": "Enabled",
+      "disabled": "Disabled",
+      "accountActive": "Verified & Approved",
+      "accountRestricted": "Account Restricted"
     }
   },
   "transactionDetails": {
@@ -166,9 +177,10 @@
     "title": "Transaction details",
     "mainDetailsTitle": "Main details",
     "additionalDetailsTitle": "Additional details",
+    "loading": "Loading transaction details...",
+    "receiptShared": "Receipt for transaction {id} ready to share.",
     "actions": {
-      "shareReceipt": "Share receipt",
-      "refund": "Refund"
+      "shareReceipt": "Share receipt"
     },
     "fields": {
       "dateOfOperation": "Date of operation",
@@ -189,6 +201,25 @@
       "reversal": "Reversal",
       "terminalSerialId": "Terminal serial ID",
       "threeDSecure": "3D secure"
+    },
+    "values": {
+      "approved": "Approved",
+      "purchase": "Purchase",
+      "paymentApproved": "Payment approved",
+      "yes": "YES",
+      "no": "NO"
     }
+  },
+  "exportModal": {
+    "title": "Export Data",
+    "description": "Enter your email address. When your export is generated and ready, you will receive an email containing the export.",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "name@company.com",
+    "formatLabel": "Export Format",
+    "submit": "Send Export",
+    "submitting": "Sending...",
+    "cancel": "Cancel",
+    "emailRequired": "Please enter a valid email address.",
+    "toastSuccess": "When it is ready, you will receive an email about the export."
   }
 }

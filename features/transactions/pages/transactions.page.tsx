@@ -1,18 +1,18 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout } from '@/features/dashboard';
+import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
 import { Button } from '@/shared/components/common/button';
+import { useToast } from '@/shared/components/common/Toast';
 import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
 import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
 import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
 import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
-import { downloadFile } from '@/shared/utils/download';
 import type { TransactionItem } from '../interfaces/transaction.interface';
 import { transactionsApi } from '../api/transactions.api';
 
@@ -24,12 +24,13 @@ export async function getStaticProps() {
 export default function TransactionsPage() {
   const router = useRouter();
   const t = useTranslations('dashboard');
+  const { showToast } = useToast();
   const [transactions, setTransactions] = useState<TransactionItem[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [isExporting, setIsExporting] = useState(false);
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const fetchTransactions = useCallback((page: number) => {
     transactionsApi
@@ -55,18 +56,13 @@ export default function TransactionsPage() {
     fetchTransactions(currentPage);
   }, [currentPage, fetchTransactions]);
 
-  const handleExport = async () => {
-    try {
-      setIsExporting(true);
-      const res = await transactionsApi.exportTransactions('csv').send();
-      if (res && res.data) {
-        downloadFile(res.data, res.filename || 'transactions-export.csv');
-      }
-    } catch (err) {
-      console.error('Failed to export transactions:', err);
-    } finally {
-      setIsExporting(false);
-    }
+  const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
+    await transactionsApi.exportTransactions(format, email).send();
+    showToast({
+      type: 'success',
+      title: t('exportModal.title'),
+      message: t('exportModal.toastSuccess'),
+    });
   };
 
   const columns: Column<TransactionItem>[] = [
@@ -218,10 +214,9 @@ export default function TransactionsPage() {
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
-              onClick={handleExport}
-              disabled={isExporting}
+              onClick={() => setIsExportModalOpen(true)}
             >
-              {isExporting ? 'Exporting...' : t('transactions.actions.export')}
+              {t('transactions.actions.export')}
             </Button>
           </div>
         </div>
@@ -244,6 +239,13 @@ export default function TransactionsPage() {
           onPageChange={handlePageChange}
           previousLabel={t('transactions.pagination.previous')}
           nextLabel={t('transactions.pagination.next')}
+        />
+
+        <ExportModal
+          isOpen={isExportModalOpen}
+          onClose={() => setIsExportModalOpen(false)}
+          title={t('transactions.title')}
+          onSubmit={handleExportSubmit}
         />
       </div>
     </DashboardLayout>

@@ -1,118 +1,126 @@
 import { defineMock } from '@alova/mock';
-import type { StatisticsOverviewResponse } from '../interfaces/statistics.interface';
+import { mockTransactionsData } from '@/features/transactions/mocks/transactions.mock';
+import type {
+  StatisticsOverviewResponse,
+  CategoryDistributionItem,
+  MonthlyRevenueItem,
+  StatisticItem,
+} from '../interfaces/statistics.interface';
 
-const mockStatisticsData: StatisticsOverviewResponse = {
-  kpi: {
-    totalRevenue: '$1,054,700',
-    revenueGrowth: '+14.2%',
-    totalTransactions: '260,210',
-    transactionGrowth: '+8.7%',
-    activeUsers: '65,510',
-    userGrowth: '+22.4%',
-    avgTransaction: '$4.05',
-    avgGrowth: '+5.1%',
-  },
-  monthlyRevenue: [
-    { month: 'Jan', value: 48, label: '$48k' },
-    { month: 'Feb', value: 65, label: '$65k' },
-    { month: 'Mar', value: 82, label: '$82k' },
-    { month: 'Apr', value: 96, label: '$96k' },
-    { month: 'May', value: 130, label: '$130k' },
-    { month: 'Jun', value: 165, label: '$165k' },
-    { month: 'Jul', value: 188, label: '$188k' },
-    { month: 'Aug', value: 210, label: '$210k' },
-  ],
-  categoryDistribution: [
-    { name: 'Corporate Finance', percentage: 76, amount: '$382.9k' },
-    { name: 'Intl Transfers', percentage: 54, amount: '$210.4k' },
-    { name: 'Retail Banking', percentage: 42, amount: '$145.2k' },
-    { name: 'Card Services', percentage: 32, amount: '$94.5k' },
-    { name: 'Microloans', percentage: 25, amount: '$88.4k' },
-  ],
-  items: [
+const parseAmount = (amountStr: string): number => {
+  const clean = amountStr.replace(/[^0-9.]/g, '');
+  return parseFloat(clean) || 0;
+};
+
+export const computeStatisticsFromTransactions = (): StatisticsOverviewResponse => {
+  const transactions = mockTransactionsData;
+  const totalTransactionsCount = transactions.length;
+
+  // Calculate total revenue and avg from completed/all transactions
+  const totalRevenueNum = transactions.reduce((acc, t) => acc + parseAmount(t.amount), 0);
+  const avgTransactionNum = totalTransactionsCount > 0 ? totalRevenueNum / totalTransactionsCount : 0;
+
+  // Calculate unique participants
+  const uniqueUsers = new Set(transactions.flatMap((t) => [t.sender, t.receiver]));
+
+  // Monthly revenue aggregation
+  const monthOrder = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'];
+  const monthlyRevenueMap: Record<string, number> = {};
+  monthOrder.forEach((m) => {
+    monthlyRevenueMap[m] = 0;
+  });
+
+  transactions.forEach((t) => {
+    monthOrder.forEach((m) => {
+      if (t.date.includes(m)) {
+        monthlyRevenueMap[m] += parseAmount(t.amount);
+      }
+    });
+  });
+
+  const monthlyRevenue: MonthlyRevenueItem[] = monthOrder.map((month) => {
+    const revenue = monthlyRevenueMap[month];
+    const value = Math.max(15, Math.round(revenue / 50)); // Chart height scale (0 - 240)
+    return {
+      month,
+      value,
+      label: `€${revenue >= 1000 ? (revenue / 1000).toFixed(1) + 'k' : revenue.toFixed(0)}`,
+    };
+  });
+
+  // Group by transaction types: Transfer, Payment, Top-up
+  const typesMap: Record<
+    string,
     {
-      id: 1,
-      no: 1,
-      category: 'Retail Banking',
-      users: '12,450',
-      transactions: '45,210',
-      revenue: '$145,200.00',
-      growth: '+14.2%',
-      status: 'Active',
+      count: number;
+      revenue: number;
+      users: Set<string>;
+      completedCount: number;
+    }
+  > = {
+    Transfer: { count: 0, revenue: 0, users: new Set(), completedCount: 0 },
+    Payment: { count: 0, revenue: 0, users: new Set(), completedCount: 0 },
+    'Top-up': { count: 0, revenue: 0, users: new Set(), completedCount: 0 },
+  };
+
+  transactions.forEach((t) => {
+    if (!typesMap[t.type]) {
+      typesMap[t.type] = { count: 0, revenue: 0, users: new Set(), completedCount: 0 };
+    }
+    typesMap[t.type].count += 1;
+    typesMap[t.type].revenue += parseAmount(t.amount);
+    typesMap[t.type].users.add(t.sender);
+    typesMap[t.type].users.add(t.receiver);
+    if (t.status === 'Completed') {
+      typesMap[t.type].completedCount += 1;
+    }
+  });
+
+  const categoryDistribution: CategoryDistributionItem[] = Object.entries(typesMap).map(
+    ([type, data]) => {
+      const percentage = totalRevenueNum > 0 ? Math.round((data.revenue / totalRevenueNum) * 100) : 0;
+      return {
+        name: type === 'Transfer' ? 'Bank Transfers' : type === 'Payment' ? 'Merchant Payments' : 'Account Top-ups',
+        percentage,
+        amount: `€${data.revenue >= 1000 ? (data.revenue / 1000).toFixed(1) + 'k' : data.revenue.toFixed(0)}`,
+      };
+    }
+  );
+
+  const growthRates: Record<string, string> = {
+    Transfer: '+14.2%',
+    Payment: '+8.7%',
+    'Top-up': '+22.4%',
+  };
+
+  const items: StatisticItem[] = Object.entries(typesMap).map(([type, data], index) => ({
+    id: index + 1,
+    no: index + 1,
+    category: type === 'Transfer' ? 'Bank Transfers' : type === 'Payment' ? 'Merchant Payments' : 'Account Top-ups',
+    users: data.users.size.toLocaleString('en-US'),
+    transactions: data.count.toLocaleString('en-US'),
+    revenue: `€${data.revenue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+    growth: growthRates[type] || '+5.0%',
+    status: data.completedCount > 0 ? 'Active' : 'Inactive',
+  }));
+
+  return {
+    kpi: {
+      totalRevenue: `€${totalRevenueNum.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+      revenueGrowth: '+14.2%',
+      totalTransactions: totalTransactionsCount.toLocaleString('en-US'),
+      transactionGrowth: '+8.7%',
+      activeUsers: uniqueUsers.size.toLocaleString('en-US'),
+      userGrowth: '+22.4%',
+      avgTransaction: `€${avgTransactionNum.toFixed(2)}`,
+      avgGrowth: '+5.1%',
     },
-    {
-      id: 2,
-      no: 2,
-      category: 'Corporate Finance',
-      users: '3,120',
-      transactions: '18,400',
-      revenue: '$382,900.00',
-      growth: '+8.7%',
-      status: 'Active',
-    },
-    {
-      id: 3,
-      no: 3,
-      category: 'Card Services',
-      users: '28,900',
-      transactions: '112,050',
-      revenue: '$94,500.00',
-      growth: '+22.4%',
-      status: 'Active',
-    },
-    {
-      id: 4,
-      no: 4,
-      category: 'E-Commerce Gateway',
-      users: '8,400',
-      transactions: '34,900',
-      revenue: '$71,300.00',
-      growth: '+5.1%',
-      status: 'Active',
-    },
-    {
-      id: 5,
-      no: 5,
-      category: 'International Transfers',
-      users: '1,890',
-      transactions: '6,450',
-      revenue: '$210,400.00',
-      growth: '-1.8%',
-      status: 'Active',
-    },
-    {
-      id: 6,
-      no: 6,
-      category: 'POS Terminals',
-      users: '5,600',
-      transactions: '28,100',
-      revenue: '$43,100.00',
-      growth: '+3.4%',
-      status: 'Active',
-    },
-    {
-      id: 7,
-      no: 7,
-      category: 'Crypto Wallets',
-      users: '950',
-      transactions: '2,800',
-      revenue: '$18,900.00',
-      growth: '-12.0%',
-      status: 'Inactive',
-    },
-    {
-      id: 8,
-      no: 8,
-      category: 'Microloans',
-      users: '4,200',
-      transactions: '12,300',
-      revenue: '$88,400.00',
-      growth: '+17.9%',
-      status: 'Active',
-    },
-  ],
+    monthlyRevenue,
+    categoryDistribution,
+    items,
+  };
 };
 
 export const statisticsMock = defineMock({
-  '[GET]/api/statistics': () => mockStatisticsData,
+  '[GET]/api/statistics': () => computeStatisticsFromTransactions(),
 });
