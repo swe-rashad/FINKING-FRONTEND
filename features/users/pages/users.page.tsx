@@ -12,7 +12,6 @@ import CreateUserIcon from '@/features/dashboard/components/icons/CreateUserIcon
 import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
 import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
 import EditIcon from '@/features/dashboard/components/icons/EditIcon';
-import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
 import { useUsers } from '../hooks/useUsers';
 import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
@@ -145,9 +144,9 @@ export default function UsersPage() {
       key: 'actions',
       header: '',
       align: 'right',
-      width: '8.5rem',
+      width: '5.5rem',
       render: (item) => (
-        <div className="flex items-center justify-end gap-2 ml-auto w-full sm:w-auto">
+        <div className="flex items-center justify-end ml-auto w-full sm:w-auto">
           <Button
             variant="secondary"
             size="sm"
@@ -161,25 +160,6 @@ export default function UsersPage() {
             <span className="inline sm:hidden">{t('users.actions.editUser')}</span>
             <span className="hidden sm:inline">{t('users.actions.edit')}</span>
           </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            icon={<ArrowRightIcon size={14} />}
-            iconPosition="right"
-            className="flex-1 sm:hidden text-gray-700"
-          >
-            Details
-          </Button>
-
-          <button
-            type="button"
-            title="Details"
-            aria-label="View user details"
-            className="hidden sm:flex w-8 h-8 rounded-lg items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
-          >
-            <ArrowRightIcon size={16} />
-          </button>
         </div>
       ),
     },
