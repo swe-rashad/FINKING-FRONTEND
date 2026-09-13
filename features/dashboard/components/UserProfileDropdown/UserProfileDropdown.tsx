@@ -57,10 +57,10 @@ export default function UserProfileDropdown({
         aria-expanded={open}
       >
         <div
-          className="w-9 h-9 rounded-full flex items-center justify-center shrink-0"
+          className="w-10 h-10 rounded-full flex items-center justify-center shrink-0"
           style={{ backgroundColor: 'var(--color-brand-lightest)' }}
         >
-          <UserIcon size={18} color="var(--color-brand-main)" />
+          <UserIcon size={20} color="var(--color-brand-main)" />
         </div>
 
         <div className="hidden sm:flex flex-col items-start leading-tight">

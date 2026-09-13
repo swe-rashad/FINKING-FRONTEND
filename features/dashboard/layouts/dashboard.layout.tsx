@@ -62,21 +62,21 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     onMobileClose={() => setMobileSidebarOpen(false)}
                 />
                 <main className="w-full h-full flex flex-col gap-0 md:gap-6 overflow-hidden">
-                    <header className="w-full h-16 min-h-16 max-h-16 sm:h-20 sm:min-h-20 sm:max-h-20 bg-white md:bg-transparent border-b border-gray-100 md:border-b-0 flex items-center justify-between md:justify-end px-4 sm:px-6 shrink-0 z-30 shadow-xs md:shadow-none">
-                        <div className="flex items-center gap-2.5 md:hidden h-9">
+                    <header className="w-full h-20 min-h-20 bg-white md:bg-transparent border-b border-gray-100 md:border-b-0 flex items-center justify-between md:justify-end px-5 sm:px-6 shrink-0 z-30 shadow-xs md:shadow-none">
+                        <div className="flex items-center gap-3 md:hidden">
                             <button
                                 type="button"
                                 onClick={() => setMobileSidebarOpen(true)}
-                                className="p-2 -ml-1.5 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
+                                className="p-2 -ml-1 rounded-xl text-gray-700 hover:bg-gray-100 transition-colors cursor-pointer shrink-0"
                                 aria-label="Open sidebar menu"
                             >
-                                <MenuToggleIcon size={22} />
+                                <MenuToggleIcon size={24} />
                             </button>
-                            <div className="h-7 w-28 flex items-center shrink-0">
+                            <div className="h-8 w-32 flex items-center shrink-0">
                                 <Image
                                     src={LogoSvg}
-                                    width={112}
-                                    height={28}
+                                    width={128}
+                                    height={32}
                                     alt="FINKING"
                                     className="h-full w-auto object-contain"
                                     priority
