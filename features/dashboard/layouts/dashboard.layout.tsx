@@ -54,7 +54,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
 
     return (
         <AuthGuard>
-            <section className="w-full flex gap-0 md:gap-6 h-screen bg-[#F9F9F9] overflow-hidden relative">
+            <section className="w-full flex h-screen bg-[#F9F9F9] overflow-hidden relative">
                 <Sidebar
                     collapsed={collapsed}
                     onToggle={handleToggle}

@@ -25,10 +25,11 @@ export default function NotFoundPage() {
           <Link href="/" className="inline-block">
             <Image
               src={LogoSvg}
-              alt="Finking Logo"
+              alt="FINKING"
               width={180}
-              height={48}
+              height={40}
               priority
+              className="h-9 w-auto object-contain block"
             />
           </Link>
         </header>

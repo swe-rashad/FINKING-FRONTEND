@@ -1,5 +1,6 @@
 import type { Method } from 'alova';
 import { tokenService } from '@/core/auth/token.service';
+import { toast } from '@/shared/components/common/Toast';
 
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string | null) => void> = [];
@@ -40,12 +41,14 @@ export const authResponseInterceptor = async (
       method.url.includes('/api/auth/refresh');
 
     if (isAuthEndpoint) {
+      toast.error('Something went wrong');
       handleUnauthorizedLogout();
       throw new Error('Authentication failed');
     }
 
     const refreshToken = tokenService.getRefreshToken();
     if (!refreshToken) {
+      toast.error('Something went wrong');
       handleUnauthorizedLogout();
       throw new Error('Session expired: No refresh token available');
     }
@@ -80,6 +83,7 @@ export const authResponseInterceptor = async (
       } catch (err) {
         onRefreshed(null);
         handleUnauthorizedLogout();
+        toast.error('Something went wrong');
         throw err;
       } finally {
         isRefreshing = false;
@@ -91,10 +95,31 @@ export const authResponseInterceptor = async (
         if (newToken) {
           resolve(method.send());
         } else {
+          toast.error('Something went wrong');
           reject(new Error('Session expired during token refresh'));
         }
       });
     });
+  }
+
+  // Handle other non-ok HTTP responses (4xx, 5xx)
+  if (response && !response.ok) {
+    let errorMessage = 'Something went wrong';
+    try {
+      const cloned = response.clone();
+      const errorData = await cloned.json();
+      if (errorData?.message) {
+        errorMessage =
+          typeof errorData.message === 'string'
+            ? errorData.message
+            : errorData.message[0] || 'Something went wrong';
+      }
+    } catch {
+      // Body is not JSON
+    }
+
+    toast.error(errorMessage || 'Something went wrong');
+    throw new Error(errorMessage || 'Something went wrong');
   }
 
   if (response && typeof response.json === 'function') {

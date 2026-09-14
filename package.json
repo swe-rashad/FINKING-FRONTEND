@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "oxlint && eslint",
+    "lint:oxlint": "oxlint",
+    "lint:eslint": "eslint"
   },
   "dependencies": {
     "@alova/mock": "^2.0.22",
@@ -25,6 +27,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.5",
+    "oxlint": "^1.82.0",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

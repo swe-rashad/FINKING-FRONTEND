@@ -80,13 +80,16 @@ export default function Sidebar({
                 height={36}
                 alt={t('layout.logoMarkAlt')}
                 priority
+                className="h-8 w-8 object-contain block"
               />
             ) : (
               <Image
                 src={LogoSvg}
                 width={150}
+                height={34}
                 alt={t('layout.logoAlt')}
                 priority
+                className="h-8 w-auto object-contain block"
               />
             )}
           </div>

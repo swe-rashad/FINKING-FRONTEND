@@ -9,6 +9,7 @@ import {
   authRequestInterceptor,
   authResponseInterceptor,
 } from '@/shared/interceptors';
+import { toast } from '@/shared/components/common/Toast';
 
 export const MOCK_STORAGE_KEY = 'ENABLE_MOCKS';
 
@@ -67,5 +68,11 @@ export const alovaInstance = createAlova({
   baseURL: process.env.NEXT_PUBLIC_API_URL || '',
   requestAdapter: dynamicAdapter,
   beforeRequest: authRequestInterceptor,
-  responded: authResponseInterceptor,
+  responded: {
+    onSuccess: authResponseInterceptor,
+    onError: (error) => {
+      toast.error('Something went wrong');
+      throw error;
+    },
+  },
 });

@@ -1,0 +1,49 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "plugins": [
+    "react",
+    "typescript",
+    "nextjs",
+    "unicorn",
+    "oxc",
+    "import",
+    "promise"
+  ],
+  "categories": {
+    "correctness": "error",
+    "suspicious": "warn",
+    "perf": "warn"
+  },
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/rules-of-hooks": "error",
+    "react/jsx-key": "error",
+    "react/no-string-refs": "error",
+    "react/no-direct-mutation-state": "error",
+    "typescript/no-duplicate-enum-values": "error",
+    "typescript/no-misused-new": "error",
+    "typescript/no-unused-vars": [
+      "warn",
+      {
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "nextjs/no-head-element": "warn",
+    "nextjs/no-async-client-component": "error",
+    "import/no-unassigned-import": "off",
+    "promise/always-return": "off",
+    "no-underscore-dangle": "off"
+  },
+  "env": {
+    "builtin": true,
+    "browser": true,
+    "node": true
+  },
+  "ignorePatterns": [
+    ".next/**",
+    "node_modules/**",
+    "out/**",
+    "build/**"
+  ]
+}
