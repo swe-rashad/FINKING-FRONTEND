@@ -29,3 +29,13 @@ export interface TransactionDetailsItem extends TransactionItem {
   currency?: string;
   operationType?: string;
 }
+
+export interface TransactionsFilters {
+  status: 'all' | TransactionStatus;
+  type: 'all' | TransactionType;
+  sender: string;
+  receiver: string;
+  minAmount?: string;
+  maxAmount?: string;
+}
+

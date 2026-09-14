@@ -1,19 +1,21 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout, ExportModal } from '@/features/dashboard';
+import { ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { useToast } from '@/shared/components/common/Toast';
-import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
-import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
-import CreateUserIcon from '@/features/dashboard/components/icons/CreateUserIcon';
-import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
-import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
-import EditIcon from '@/features/dashboard/components/icons/EditIcon';
+import {
+  FilterIcon,
+  ExportIcon,
+  CreateUserIcon,
+  ActiveIcon,
+  DeclinedIcon,
+  EditIcon,
+} from '@/shared/components/icons';
 import { useUsers } from '../hooks/useUsers';
 import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
@@ -125,7 +127,7 @@ export default function UsersPage() {
       header: t('users.columns.role'),
       render: (item) => (
         <span className={item.status === 'Blocked' ? 'text-gray-400' : 'text-gray-600'}>
-          {item.role}
+          {item.role === 'Customer' ? t('users.roles.customer') : t('users.roles.employee')}
         </span>
       ),
     },
@@ -145,7 +147,7 @@ export default function UsersPage() {
             ) : (
               <DeclinedIcon size={14} className="text-[#F04438]" />
             )}
-            <span>{item.status}</span>
+            <span>{isActive ? t('users.status.active') : t('users.status.blocked')}</span>
           </span>
         );
       },
@@ -176,7 +178,7 @@ export default function UsersPage() {
   ];
 
   return (
-    <DashboardLayout>
+    <>
       <Head>
         <title>{t('users.title')}</title>
       </Head>
@@ -236,40 +238,46 @@ export default function UsersPage() {
           nextLabel={t('users.pagination.next')}
         />
 
-        <UserFormModal
-          isOpen={isCreateModalOpen}
-          onClose={closeCreateModal}
-          onSubmit={async (data) => {
-            await createUser(data);
-          }}
-        />
+        {isCreateModalOpen && (
+          <UserFormModal
+            isOpen
+            onClose={closeCreateModal}
+            onSubmit={createUser}
+          />
+        )}
 
-        <UserFormModal
-          isOpen={isEditModalOpen}
-          user={activeUser}
-          onClose={closeEditModal}
-          onSubmit={async (data) => {
-            if (activeUser) {
-              await updateUser(activeUser.id, data);
-            }
-          }}
-        />
+        {isEditModalOpen && (
+          <UserFormModal
+            isOpen
+            user={activeUser}
+            onClose={closeEditModal}
+            onSubmit={async (data) => {
+              if (activeUser) {
+                await updateUser(activeUser.id, data);
+              }
+            }}
+          />
+        )}
 
-        <UsersFilterModal
-          isOpen={isFilterModalOpen}
-          onClose={closeFilterModal}
-          filters={filters}
-          onApply={applyFilters}
-          onReset={clearFilters}
-        />
+        {isFilterModalOpen && (
+          <UsersFilterModal
+            isOpen
+            onClose={closeFilterModal}
+            filters={filters}
+            onApply={applyFilters}
+            onReset={clearFilters}
+          />
+        )}
 
-        <ExportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          title={t('users.title')}
-          onSubmit={handleExportSubmit}
-        />
+        {isExportModalOpen && (
+          <ExportModal
+            isOpen
+            onClose={() => setIsExportModalOpen(false)}
+            title={t('users.title')}
+            onSubmit={handleExportSubmit}
+          />
+        )}
       </div>
-    </DashboardLayout>
+    </>
   );
 }

@@ -1,9 +1,9 @@
-import { useState, FormEvent } from 'react';
+import { useState, FormEvent, useCallback } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { Input, inputTypesEnum } from '@/shared/components/common/Input';
-import CloseIcon from '@/features/dashboard/components/icons/CloseIcon';
-import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
+import { CloseIcon, ExportIcon } from '@/shared/components/icons';
+import { useEscapeKey, useLockBodyScroll } from '@/shared/hooks';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -17,14 +17,24 @@ export function ExportModal({
   isOpen,
   onClose,
   title,
-  defaultEmail = 'rashad.yusifli@finking.com',
+  defaultEmail = '',
   onSubmit,
 }: ExportModalProps) {
   const t = useTranslations('dashboard');
+  const tShared = useTranslations('shared');
   const [email, setEmail] = useState(defaultEmail);
   const [format, setFormat] = useState<'csv' | 'json'>('csv');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const handleClose = useCallback(() => {
+    if (!isSubmitting) {
+      onClose();
+    }
+  }, [isSubmitting, onClose]);
+
+  useEscapeKey(handleClose, isOpen);
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) {
     return null;
@@ -43,36 +53,40 @@ export function ExportModal({
       setError(null);
       await onSubmit(trimmed, format);
       onClose();
-    } catch (err) {
-      console.error('Failed to request export:', err);
-      setError('Failed to initiate export. Please try again.');
+    } catch {
+      setError(t('exportModal.submitError'));
     } finally {
       setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="export-modal-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+    >
       <div
         className="fixed inset-0"
-        onClick={onClose}
+        onClick={handleClose}
         aria-hidden="true"
       />
 
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-7 relative z-10 border border-gray-100 flex flex-col gap-5 animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-7 relative z-10 border border-gray-100 flex flex-col gap-5 max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
               <ExportIcon size={18} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 id="export-modal-title" className="text-lg font-bold text-gray-900">
               {title || t('exportModal.title')}
             </h2>
           </div>
           <button
             type="button"
-            onClick={onClose}
-            aria-label="Close modal"
+            onClick={handleClose}
+            aria-label={tShared('common.close')}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <CloseIcon size={18} />
@@ -115,7 +129,7 @@ export function ExportModal({
                     : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
                 }`}
               >
-                CSV (.csv)
+                CSV
               </button>
               <button
                 type="button"
@@ -126,7 +140,7 @@ export function ExportModal({
                     : 'border-gray-200 hover:border-gray-300 text-gray-600 bg-white'
                 }`}
               >
-                JSON (.json)
+                JSON
               </button>
             </div>
           </div>
@@ -136,7 +150,7 @@ export function ExportModal({
               type="button"
               variant="outline"
               size="md"
-              onClick={onClose}
+              onClick={handleClose}
               disabled={isSubmitting}
             >
               {t('exportModal.cancel')}
@@ -145,9 +159,9 @@ export function ExportModal({
               type="submit"
               variant="primary"
               size="md"
-              disabled={isSubmitting}
+              loading={isSubmitting}
             >
-              {isSubmitting ? t('exportModal.submitting') : t('exportModal.submit')}
+              {t('exportModal.submit')}
             </Button>
           </div>
         </form>

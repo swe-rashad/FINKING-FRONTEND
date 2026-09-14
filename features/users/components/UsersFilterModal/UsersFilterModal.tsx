@@ -1,9 +1,10 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { Input, inputTypesEnum } from '@/shared/components/common/Input';
-import CloseIcon from '@/features/dashboard/components/icons/CloseIcon';
-import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
+import { Select } from '@/shared/components/common/Select';
+import { CloseIcon, FilterIcon } from '@/shared/components/icons';
+import { useEscapeKey, useLockBodyScroll } from '@/shared/hooks';
 import type { UsersFilters } from '../../interfaces/user.interface';
 
 interface UsersFilterModalProps {
@@ -22,20 +23,14 @@ export function UsersFilterModal({
   onReset,
 }: UsersFilterModalProps) {
   const t = useTranslations('dashboard');
+  const tShared = useTranslations('shared');
   const [name, setName] = useState(filters.name || '');
   const [email, setEmail] = useState(filters.email || '');
   const [role, setRole] = useState(filters.role || 'all');
   const [status, setStatus] = useState(filters.status || 'all');
 
-  useEffect(() => {
-    if (!isOpen) return;
-    queueMicrotask(() => {
-      setName(filters.name || '');
-      setEmail(filters.email || '');
-      setRole(filters.role || 'all');
-      setStatus(filters.status || 'all');
-    });
-  }, [isOpen, filters]);
+  useEscapeKey(onClose, isOpen);
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) {
     return null;
@@ -60,27 +55,32 @@ export function UsersFilterModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs animate-in fade-in duration-200">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="users-filter-title"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-xs"
+    >
       <div
         className="fixed inset-0"
         onClick={onClose}
         aria-hidden="true"
       />
 
-      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-7 relative z-10 border border-gray-100 flex flex-col gap-5 animate-in zoom-in-95 duration-200">
+      <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 sm:p-7 relative z-10 border border-gray-100 flex flex-col gap-5">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
             <div className="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center">
               <FilterIcon size={18} />
             </div>
-            <h2 className="text-lg font-bold text-gray-900">
+            <h2 id="users-filter-title" className="text-lg font-bold text-gray-900">
               {t('users.filterModal.title')}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
-            aria-label="Close modal"
+            aria-label={tShared('common.close')}
             className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-gray-600 hover:bg-gray-100 transition-colors cursor-pointer"
           >
             <CloseIcon size={18} />
@@ -113,43 +113,31 @@ export function UsersFilterModal({
           />
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div>
-              <label
-                htmlFor="filter-role"
-                className="block text-xs font-semibold text-gray-700 mb-1.5"
-              >
-                {t('users.filterModal.roleLabel')}
-              </label>
-              <select
-                id="filter-role"
-                value={role}
-                onChange={(e) => setRole(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
-              >
-                <option value="all">{t('users.filterModal.allRoles')}</option>
-                <option value="Customer">{t('users.roles.customer')}</option>
-                <option value="Employee">{t('users.roles.employee')}</option>
-              </select>
-            </div>
+            <Select
+              id="filter-role"
+              name="role"
+              label={t('users.filterModal.roleLabel')}
+              value={role}
+              onChange={(e) => setRole(e.target.value)}
+              options={[
+                { value: 'all', label: t('users.filterModal.allRoles') },
+                { value: 'Customer', label: t('users.roles.customer') },
+                { value: 'Employee', label: t('users.roles.employee') },
+              ]}
+            />
 
-            <div>
-              <label
-                htmlFor="filter-status"
-                className="block text-xs font-semibold text-gray-700 mb-1.5"
-              >
-                {t('users.filterModal.statusLabel')}
-              </label>
-              <select
-                id="filter-status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-xs sm:text-sm text-gray-800 font-medium focus:outline-hidden focus:ring-2 focus:ring-primary-500/20 focus:border-primary-500 transition-all cursor-pointer"
-              >
-                <option value="all">{t('users.filterModal.allStatuses')}</option>
-                <option value="Active">{t('users.status.active')}</option>
-                <option value="Blocked">{t('users.status.blocked')}</option>
-              </select>
-            </div>
+            <Select
+              id="filter-status"
+              name="status"
+              label={t('users.filterModal.statusLabel')}
+              value={status}
+              onChange={(e) => setStatus(e.target.value)}
+              options={[
+                { value: 'all', label: t('users.filterModal.allStatuses') },
+                { value: 'Active', label: t('users.status.active') },
+                { value: 'Blocked', label: t('users.status.blocked') },
+              ]}
+            />
           </div>
 
           <div className="flex items-center justify-between gap-3 pt-3 border-t border-gray-100 mt-2">

@@ -1,8 +1,10 @@
-import { useState, useEffect, FormEvent } from 'react';
+import { useState, FormEvent } from 'react';
 import { useTranslations } from 'next-intl';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { Input, inputTypesEnum } from '@/shared/components/common/Input';
-import CloseIcon from '@/features/dashboard/components/icons/CloseIcon';
+import { Select } from '@/shared/components/common/Select';
+import { CloseIcon } from '@/shared/components/icons';
+import { useEscapeKey, useLockBodyScroll } from '@/shared/hooks';
 import type { UserItem, CreateUserDto, UserRole, UserStatus } from '../../interfaces/user.interface';
 
 interface UserFormModalProps {
@@ -14,38 +16,20 @@ interface UserFormModalProps {
 
 export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModalProps) {
   const t = useTranslations('dashboard');
+  const tShared = useTranslations('shared');
   const isEdit = Boolean(user);
 
-  const [username, setUsername] = useState('');
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
-  const [email, setEmail] = useState('');
-  const [role, setRole] = useState<UserRole>('Customer');
-  const [status, setStatus] = useState<UserStatus>('Active');
+  const [username, setUsername] = useState(user?.username ?? '');
+  const [firstName, setFirstName] = useState(user?.firstName ?? '');
+  const [lastName, setLastName] = useState(user?.lastName ?? '');
+  const [email, setEmail] = useState(user?.email ?? '');
+  const [role, setRole] = useState<UserRole>(user?.role ?? 'Customer');
+  const [status, setStatus] = useState<UserStatus>(user?.status ?? 'Active');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    if (!isOpen) return;
-    queueMicrotask(() => {
-      if (user) {
-        setUsername(user.username);
-        setFirstName(user.firstName);
-        setLastName(user.lastName);
-        setEmail(user.email);
-        setRole(user.role);
-        setStatus(user.status);
-      } else {
-        setUsername('');
-        setFirstName('');
-        setLastName('');
-        setEmail('');
-        setRole('Customer');
-        setStatus('Active');
-      }
-      setError(null);
-    });
-  }, [user, isOpen]);
+  useEscapeKey(onClose, isOpen);
+  useLockBodyScroll(isOpen);
 
   if (!isOpen) {
     return null;
@@ -54,7 +38,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!username.trim() || !email.trim()) {
-      setError('Please fill out all required fields.');
+      setError(t('users.modal.validationError'));
       return;
     }
 
@@ -70,7 +54,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
         status,
       });
     } catch {
-      setError('An error occurred while saving.');
+      setError(t('users.modal.saveError'));
     } finally {
       setIsSubmitting(false);
     }
@@ -84,7 +68,6 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
     >
       <div
         className="w-full max-w-xl bg-white rounded-3xl shadow-xl border border-gray-100 overflow-hidden"
-        style={{ animation: 'fadeInUp 0.2s ease-out' }}
       >
         <div className="flex items-center justify-between px-6 py-5 border-b border-gray-100">
           <h2 className="text-lg font-bold text-gray-900">
@@ -93,6 +76,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
           <Button
             variant="secondary"
             onClick={onClose}
+            aria-label={tShared('common.close')}
             className="w-9 h-9 !p-0 rounded-full flex items-center justify-center text-gray-500 hover:text-gray-700"
           >
             <CloseIcon size={16} />
@@ -110,7 +94,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
             <Input
               type={inputTypesEnum.Text}
               label={`${t('users.modal.usernameLabel')} *`}
-              placeholder="e.g. cavanshirhas"
+              placeholder={t('users.modal.usernamePlaceholder')}
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
@@ -119,7 +103,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
             <Input
               type={inputTypesEnum.Email}
               label={`${t('users.modal.emailLabel')} *`}
-              placeholder="user@example.com"
+              placeholder={t('users.modal.emailPlaceholder')}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -130,7 +114,7 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
             <Input
               type={inputTypesEnum.Text}
               label={t('users.modal.firstNameLabel')}
-              placeholder="e.g. Cavanshir"
+              placeholder={t('users.modal.firstNamePlaceholder')}
               value={firstName}
               onChange={(e) => setFirstName(e.target.value)}
             />
@@ -138,44 +122,34 @@ export function UserFormModal({ isOpen, onClose, user, onSubmit }: UserFormModal
             <Input
               type={inputTypesEnum.Text}
               label={t('users.modal.lastNameLabel')}
-              placeholder="e.g. Hasanov"
+              placeholder={t('users.modal.lastNamePlaceholder')}
               value={lastName}
               onChange={(e) => setLastName(e.target.value)}
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div className="flex flex-col">
-              <p className="text-sm mb-1 font-medium text-gray-700">
-                {t('users.modal.roleLabel')}
-              </p>
-              <div className="h-12 relative box-border rounded-xl bg-form-element-bg border border-transparent focus-within:border-primary-500 focus-within:bg-white transition-all">
-                <select
-                  value={role}
-                  onChange={(e) => setRole(e.target.value as UserRole)}
-                  className="w-full h-full box-border px-4 rounded-xl text-sm text-gray-900 bg-transparent outline-none cursor-pointer"
-                >
-                  <option value="Customer">Customer</option>
-                  <option value="Employee">Employee</option>
-                </select>
-              </div>
-            </div>
+            <Select
+              id="user-role-select"
+              label={t('users.modal.roleLabel')}
+              value={role}
+              onChange={(e) => setRole(e.target.value as UserRole)}
+              options={[
+                { value: 'Customer', label: t('users.roles.customer') },
+                { value: 'Employee', label: t('users.roles.employee') },
+              ]}
+            />
 
-            <div className="flex flex-col">
-              <p className="text-sm mb-1 font-medium text-gray-700">
-                {t('users.modal.statusLabel')}
-              </p>
-              <div className="h-12 relative box-border rounded-xl bg-form-element-bg border border-transparent focus-within:border-primary-500 focus-within:bg-white transition-all">
-                <select
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as UserStatus)}
-                  className="w-full h-full box-border px-4 rounded-xl text-sm text-gray-900 bg-transparent outline-none cursor-pointer"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Blocked">Blocked</option>
-                </select>
-              </div>
-            </div>
+            <Select
+              id="user-status-select"
+              label={t('users.modal.statusLabel')}
+              value={status}
+              onChange={(e) => setStatus(e.target.value as UserStatus)}
+              options={[
+                { value: 'Active', label: t('users.status.active') },
+                { value: 'Blocked', label: t('users.status.blocked') },
+              ]}
+            />
           </div>
 
           <div className="flex items-center justify-end gap-3 mt-4 pt-4 border-t border-gray-100">

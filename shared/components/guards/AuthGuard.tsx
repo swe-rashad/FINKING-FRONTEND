@@ -1,43 +1,46 @@
-import { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { useRouter } from 'next/router';
+import { useTranslations } from 'next-intl';
 import { tokenService } from '@/core/auth/token.service';
+import { getPostLoginRedirect, getSafeRedirectPath } from '@/core/auth/safe-redirect';
+import { useIsClient } from '@/shared/hooks';
 
 interface AuthGuardProps {
   children: ReactNode;
 }
 
+function GuardSpinner({ label }: { label?: string }) {
+  return (
+    <div className="flex min-h-screen w-full items-center justify-center bg-gray-50">
+      <div className="flex flex-col items-center gap-3">
+        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-primary-500" />
+        {label ? (
+          <span className="text-xs font-medium text-gray-400">{label}</span>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export function AuthGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const [isAuthorized, setIsAuthorized] = useState(false);
+  const t = useTranslations('shared');
+  const isClient = useIsClient();
+  const isAuthorized = isClient && tokenService.isAuthenticated();
 
   useEffect(() => {
-    if (!tokenService.isAuthenticated()) {
-      const redirectUrl =
-        router.asPath && router.asPath !== '/' && router.asPath !== '/auth/login'
-          ? router.asPath
-          : undefined;
+    if (!router.isReady || !isClient || isAuthorized) return;
 
-      router.replace(
-        redirectUrl
-          ? `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`
-          : '/auth/login'
-      );
-    } else {
-      queueMicrotask(() => {
-        setIsAuthorized(true);
-      });
-    }
-  }, [router]);
+    const redirectUrl = getPostLoginRedirect(router.asPath);
+    router.replace(
+      redirectUrl
+        ? `/auth/login?redirect=${encodeURIComponent(redirectUrl)}`
+        : '/auth/login'
+    );
+  }, [isAuthorized, isClient, router]);
 
   if (!isAuthorized) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-[#F9F9F9]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-primary-500" />
-          <span className="text-xs font-medium text-gray-400">Loading...</span>
-        </div>
-      </div>
-    );
+    return <GuardSpinner label={t('common.loading')} />;
   }
 
   return <>{children}</>;
@@ -45,25 +48,16 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
 export function GuestGuard({ children }: AuthGuardProps) {
   const router = useRouter();
-  const [isGuest, setIsGuest] = useState(false);
+  const isClient = useIsClient();
+  const isAuthenticated = isClient && tokenService.isAuthenticated();
 
   useEffect(() => {
-    if (tokenService.isAuthenticated()) {
-      const redirect = (router.query.redirect as string) || '/dashboard/statistics';
-      router.replace(redirect);
-    } else {
-      queueMicrotask(() => {
-        setIsGuest(true);
-      });
-    }
-  }, [router]);
+    if (!router.isReady || !isClient || !isAuthenticated) return;
+    router.replace(getSafeRedirectPath(router.query.redirect));
+  }, [isAuthenticated, isClient, router]);
 
-  if (!isGuest) {
-    return (
-      <div className="flex min-h-screen w-full items-center justify-center bg-white">
-        <div className="h-10 w-10 animate-spin rounded-full border-4 border-gray-200 border-t-primary-500" />
-      </div>
-    );
+  if (!isClient || isAuthenticated) {
+    return <GuardSpinner />;
   }
 
   return <>{children}</>;

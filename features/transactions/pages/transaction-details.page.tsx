@@ -3,12 +3,11 @@ import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { useToast } from '@/shared/components/common/Toast';
-import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
+import { ExportIcon } from '@/shared/components/icons';
 import { transactionsApi } from '../api/transactions.api';
 import type { TransactionDetailsItem } from '../interfaces/transaction.interface';
 
@@ -50,14 +49,12 @@ export default function TransactionDetailsPage() {
 
   if (isLoading || !transaction) {
     return (
-      <DashboardLayout>
-        <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
-          <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
-            <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-3" />
-            {t('transactionDetails.loading')}
-          </div>
+      <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
+        <div className="flex items-center justify-center py-20 text-gray-400 text-sm">
+          <div className="w-5 h-5 border-2 border-primary-500 border-t-transparent rounded-full animate-spin mr-3" />
+          {t('transactionDetails.loading')}
         </div>
-      </DashboardLayout>
+      </div>
     );
   }
 
@@ -70,7 +67,7 @@ export default function TransactionDetailsPage() {
   };
 
   return (
-    <DashboardLayout>
+    <>
       <Head>
         <title>{`${transaction.id} - ${t('transactionDetails.title')}`}</title>
       </Head>
@@ -290,6 +287,6 @@ export default function TransactionDetailsPage() {
           </div>
         </div>
       </div>
-    </DashboardLayout>
+    </>
   );
 }

@@ -48,6 +48,19 @@ body {
   background-color: #ffffff;
 }
 
+.finking-date-range.rdp-root,
+.rdp-root.finking-date-range {
+  --rdp-accent-color: var(--color-brand-main);
+  --rdp-accent-background-color: var(--color-brand-lightest);
+  --rdp-today-color: var(--color-brand-main);
+  --rdp-range_middle-background-color: var(--color-brand-lightest);
+  --rdp-day-height: 2.25rem;
+  --rdp-day-width: 2.25rem;
+  --rdp-day_button-height: 2.125rem;
+  --rdp-day_button-width: 2.125rem;
+  --rdp-months-gap: 1.5rem;
+}
+
 @keyframes upssFloat {
 
   0%,

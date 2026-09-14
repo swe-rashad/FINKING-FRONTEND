@@ -5,7 +5,10 @@
     "logoMarkAlt": "FINKING Logo Mark",
     "sidebar": {
       "expand": "Expand sidebar",
-      "collapse": "Collapse sidebar"
+      "collapse": "Collapse sidebar",
+      "open": "Open menu",
+      "close": "Close menu",
+      "navigation": "Main navigation"
     },
     "navs": {
       "statistics": "Statistics",
@@ -14,6 +17,7 @@
     },
     "userProfile": {
       "logout": "Logout",
+      "menuLabel": "Account menu",
       "defaultName": "Rashad Yusifli",
       "defaultCompany": "Finking Financial"
     }
@@ -57,13 +61,19 @@
       "createTitle": "Create New User",
       "editTitle": "Edit User",
       "usernameLabel": "Username",
+      "usernamePlaceholder": "e.g. cavanshirhas",
       "firstNameLabel": "First name",
+      "firstNamePlaceholder": "e.g. Cavanshir",
       "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "e.g. Hasanov",
       "emailLabel": "Email address",
+      "emailPlaceholder": "user@example.com",
       "roleLabel": "Role",
       "statusLabel": "Status",
       "submitCreate": "Create User",
-      "submitEdit": "Save Changes"
+      "submitEdit": "Save Changes",
+      "validationError": "Please fill out all required fields.",
+      "saveError": "An error occurred while saving."
     },
     "filterModal": {
       "title": "Filter Users",
@@ -86,7 +96,9 @@
     "rowCount": "Row count: {count}",
     "actions": {
       "filter": "Filter",
-      "export": "Export"
+      "export": "Export",
+      "details": "Details",
+      "viewDetails": "View transaction details"
     },
     "columns": {
       "no": "№",
@@ -98,6 +110,11 @@
       "type": "Type",
       "status": "Status"
     },
+    "types": {
+      "transfer": "Transfer",
+      "payment": "Payment",
+      "topUp": "Top-up"
+    },
     "status": {
       "completed": "Completed",
       "pending": "Pending",
@@ -106,14 +123,41 @@
     "pagination": {
       "previous": "Previous",
       "next": "Next"
+    },
+    "filterModal": {
+      "title": "Filter Transactions",
+      "description": "Filter transactions by sender, receiver, type, status, or amount range.",
+      "senderLabel": "Sender",
+      "senderPlaceholder": "Search by sender...",
+      "receiverLabel": "Receiver",
+      "receiverPlaceholder": "Search by receiver...",
+      "statusLabel": "Status",
+      "statusAll": "All statuses",
+      "typeLabel": "Type",
+      "typeAll": "All types",
+      "minAmountLabel": "Min Amount",
+      "minAmountPlaceholder": "e.g. 100",
+      "maxAmountLabel": "Max Amount",
+      "maxAmountPlaceholder": "e.g. 5000",
+      "apply": "Apply Filter",
+      "reset": "Reset",
+      "cancel": "Cancel",
+      "activeFiltersCount": "{count} active"
     }
   },
   "statistics": {
     "title": "Statistics",
     "rowCount": "Row count: {count}",
+    "dateRange": {
+      "startDate": "Start date",
+      "endDate": "End date",
+      "to": "to"
+    },
     "actions": {
       "filter": "Filter",
-      "export": "Export"
+      "export": "Export",
+      "details": "Details",
+      "viewDetails": "View category details"
     },
     "columns": {
       "no": "№",
@@ -139,6 +183,7 @@
       "revenueSubtitle": "Monthly revenue performance (EUR)",
       "categoryBreakdown": "Category Distribution",
       "categorySubtitle": "Transaction volume by segment",
+      "volume": "Volume",
       "thisMonth": "vs last month"
     },
     "pagination": {
@@ -195,6 +240,8 @@
     "submitting": "Sending...",
     "cancel": "Cancel",
     "emailRequired": "Please enter a valid email address.",
-    "toastSuccess": "When it is ready, you will receive an email about the export."
+    "toastSuccess": "When it is ready, you will receive an email about the export.",
+    "submitError": "Failed to start the export. Please try again.",
+    "close": "Close"
   }
 }

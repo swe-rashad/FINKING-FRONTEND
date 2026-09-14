@@ -1,6 +1,7 @@
 import { useMemo } from 'react';
+import { useTranslations } from 'next-intl';
 import type { PaginationProps } from './pagination.type';
-import { ArrowLeftIcon, ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
+import { ArrowLeftIcon, ArrowRightIcon } from '@/shared/components/icons';
 
 export function Pagination({
   currentPage,
@@ -11,6 +12,7 @@ export function Pagination({
   siblingCount = 1,
   className = '',
 }: PaginationProps) {
+  const t = useTranslations('shared');
   const paginationRange = useMemo(() => {
     const totalPageNumbers = siblingCount + 5;
 
@@ -63,7 +65,7 @@ export function Pagination({
   return (
     <nav
       role="navigation"
-      aria-label="Pagination"
+      aria-label={t('common.pagination')}
       className={`flex items-center justify-center gap-1 sm:gap-2 select-none py-6 ${className}`}
     >
       <button
@@ -84,9 +86,10 @@ export function Pagination({
       <div className="flex items-center gap-1">
         {paginationRange.map((pageNumber, idx) => {
           if (pageNumber === '...') {
+            const dotsKey = idx === 1 ? 'dots-left' : 'dots-right';
             return (
               <span
-                key={`dots-${idx}`}
+                key={dotsKey}
                 className="w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center text-xs sm:text-sm text-gray-400"
               >
                 &#8230;

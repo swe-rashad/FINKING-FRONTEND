@@ -221,6 +221,48 @@ export const transactionsMock = defineMock({
   },
 
   '[GET]/api/transactions': ({ query }) => {
-    return paginateMock(mockTransactionsData, query);
+    let filtered = [...mockTransactionsData];
+
+    if (query.sender) {
+      const sender = String(query.sender).toLowerCase();
+      filtered = filtered.filter((t) => t.sender.toLowerCase().includes(sender));
+    }
+
+    if (query.receiver) {
+      const receiver = String(query.receiver).toLowerCase();
+      filtered = filtered.filter((t) => t.receiver.toLowerCase().includes(receiver));
+    }
+
+    if (query.status && query.status !== 'all') {
+      const status = String(query.status).toLowerCase();
+      filtered = filtered.filter((t) => t.status.toLowerCase() === status);
+    }
+
+    if (query.type && query.type !== 'all') {
+      const type = String(query.type).toLowerCase();
+      filtered = filtered.filter((t) => t.type.toLowerCase() === type);
+    }
+
+    if (query.minAmount) {
+      const min = parseFloat(String(query.minAmount));
+      if (!isNaN(min)) {
+        filtered = filtered.filter((t) => {
+          const num = parseFloat(t.amount.replace(/[^0-9.]/g, '')) || 0;
+          return num >= min;
+        });
+      }
+    }
+
+    if (query.maxAmount) {
+      const max = parseFloat(String(query.maxAmount));
+      if (!isNaN(max)) {
+        filtered = filtered.filter((t) => {
+          const num = parseFloat(t.amount.replace(/[^0-9.]/g, '')) || 0;
+          return num <= max;
+        });
+      }
+    }
+
+    return paginateMock(filtered, query);
   },
 });

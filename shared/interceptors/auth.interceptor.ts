@@ -1,6 +1,7 @@
 import type { Method } from 'alova';
 import { tokenService } from '@/core/auth/token.service';
 import { toast } from '@/shared/components/common/Toast';
+import { isMockEnabled } from '@/core/api/alova';
 
 let isRefreshing = false;
 let refreshSubscribers: Array<(token: string | null) => void> = [];
@@ -57,19 +58,32 @@ export const authResponseInterceptor = async (
       isRefreshing = true;
 
       try {
-        const refreshResponse = await fetch('/api/auth/refresh', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ refreshToken }),
-        });
+        let data: { authToken?: string; refreshToken?: string };
 
-        if (!refreshResponse.ok) {
-          throw new Error('Refresh token rejected');
+        if (isMockEnabled()) {
+          const timestamp = Date.now();
+          data = {
+            authToken: `mock_jwt_access_${timestamp}_${Math.random().toString(36).substring(2, 9)}`,
+            refreshToken: `mock_jwt_refresh_${timestamp}_${Math.random().toString(36).substring(2, 9)}`,
+          };
+        } else {
+          const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
+          const refreshUrl = `${apiBase}/api/auth/refresh`;
+          const refreshResponse = await fetch(refreshUrl, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ refreshToken }),
+          });
+
+          if (!refreshResponse.ok) {
+            throw new Error('Refresh token rejected');
+          }
+
+          data = await refreshResponse.json();
         }
 
-        const data = await refreshResponse.json();
         if (data && data.authToken) {
           tokenService.setTokens({
             authToken: data.authToken,

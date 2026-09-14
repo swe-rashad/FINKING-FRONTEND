@@ -1,5 +1,17 @@
 import { ReactNode } from 'react';
+import { useTranslations } from 'next-intl';
 import type { TableProps } from './table.type';
+
+function getAlignClass(align?: 'left' | 'center' | 'right') {
+  switch (align) {
+    case 'center':
+      return 'text-center';
+    case 'right':
+      return 'text-right';
+    default:
+      return 'text-left';
+  }
+}
 
 export function Table<T>({
   columns,
@@ -7,20 +19,13 @@ export function Table<T>({
   keyExtractor,
   onRowClick,
   rowClassName,
-  emptyMessage = 'No data available',
+  emptyMessage,
   isLoading = false,
   className = '',
 }: TableProps<T>) {
-  const getAlignClass = (align?: 'left' | 'center' | 'right') => {
-    switch (align) {
-      case 'center':
-        return 'text-center';
-      case 'right':
-        return 'text-right';
-      default:
-        return 'text-left';
-    }
-  };
+  const t = useTranslations('shared');
+  const resolvedEmptyMessage = emptyMessage ?? t('common.empty');
+  const loadingLabel = t('common.loading');
 
   return (
     <div className={`w-full ${className}`}>
@@ -49,14 +54,14 @@ export function Table<T>({
                   <td colSpan={columns.length} className="px-4 py-12 text-center text-sm text-gray-400">
                     <div className="flex items-center justify-center gap-2">
                       <div className="w-4 h-4 rounded-full border-2 border-primary-500 border-t-transparent animate-spin" />
-                      <span>Loading...</span>
+                      <span>{loadingLabel}</span>
                     </div>
                   </td>
                 </tr>
               ) : data.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length} className="px-4 py-12 text-center text-sm text-gray-400">
-                    {emptyMessage}
+                    {resolvedEmptyMessage}
                   </td>
                 </tr>
               ) : (
@@ -106,12 +111,12 @@ export function Table<T>({
           <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-sm text-gray-400 shadow-xs">
             <div className="flex items-center justify-center gap-2">
               <div className="w-4 h-4 rounded-full border-2 border-primary-500 border-t-transparent animate-spin" />
-              <span>Loading...</span>
+              <span>{loadingLabel}</span>
             </div>
           </div>
         ) : data.length === 0 ? (
           <div className="bg-white rounded-2xl border border-gray-100 p-8 text-center text-sm text-gray-400 shadow-xs">
-            {emptyMessage}
+            {resolvedEmptyMessage}
           </div>
         ) : (
           data.map((item, index) => {

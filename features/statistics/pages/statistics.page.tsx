@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout, ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
-import { Button } from '@/shared/components/common/button';
-import { useToast } from '@/shared/components/common/Toast';
-import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
-import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
-import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
-import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
-import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
+import { Button } from '@/shared/components/common/Button';
+import { DateRangePicker } from '@/shared/components/common/DateRangePicker';
+import {
+  ActiveIcon,
+  DeclinedIcon,
+  ArrowRightIcon,
+} from '@/shared/components/icons';
 import type { StatisticItem } from '../interfaces/statistics.interface';
 import { useStatistics } from '../hooks';
 
@@ -23,9 +22,9 @@ export async function getStaticProps() {
 
 export default function StatisticsPage() {
   const t = useTranslations('dashboard');
-  const { showToast } = useToast();
   const [currentPage, setCurrentPage] = useState(1);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
+  const [startDate, setStartDate] = useState('2026-01-01');
+  const [endDate, setEndDate] = useState('2026-09-30');
 
   const {
     items,
@@ -36,17 +35,6 @@ export default function StatisticsPage() {
     hoveredPoint,
     setHoveredPoint,
   } = useStatistics();
-
-  const handleExportSubmit = async (_email: string) => {
-    void _email;
-    // Simulated export request
-    await new Promise((resolve) => setTimeout(resolve, 600));
-    showToast({
-      type: 'success',
-      title: t('exportModal.title'),
-      message: t('exportModal.toastSuccess'),
-    });
-  };
 
   const columns: Column<StatisticItem>[] = [
     {
@@ -125,7 +113,11 @@ export default function StatisticsPage() {
             ) : (
               <DeclinedIcon size={14} className="text-[#F04438]" />
             )}
-            <span>{item.status}</span>
+            <span>
+              {isActive
+                ? t('statistics.status.active')
+                : t('statistics.status.inactive')}
+            </span>
           </span>
         );
       },
@@ -144,12 +136,12 @@ export default function StatisticsPage() {
             iconPosition="right"
             className="w-full sm:hidden text-gray-700"
           >
-            Details
+            {t('statistics.actions.details')}
           </Button>
           <button
             type="button"
-            title="Details"
-            aria-label="View category details"
+            title={t('statistics.actions.details')}
+            aria-label={t('statistics.actions.viewDetails')}
             className="hidden sm:flex w-8 h-8 rounded-lg items-center justify-center text-gray-400 hover:text-gray-700 hover:bg-gray-100 transition-colors ml-auto cursor-pointer shrink-0"
           >
             <ArrowRightIcon size={16} />
@@ -173,7 +165,7 @@ export default function StatisticsPage() {
   const points = monthlyRevenue.map((item, index) => {
     const x = chartPaddingLeft + (index / Math.max(monthlyRevenue.length - 1, 1)) * innerWidth;
     const y = chartPaddingTop + innerHeight - (item.value / maxValue) * innerHeight;
-    return { x, y, ...item };
+    return { x, y, month: item.month, value: item.value, label: item.label };
   });
 
   const pathD = points.reduce((acc, point, index) => {
@@ -191,7 +183,7 @@ export default function StatisticsPage() {
     : '';
 
   return (
-    <DashboardLayout>
+    <>
       <Head>
         <title>{t('statistics.title')}</title>
       </Head>
@@ -201,22 +193,14 @@ export default function StatisticsPage() {
             {t('statistics.title')}
           </h1>
 
-          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-            <Button
-              variant="secondary"
-              icon={<FilterIcon size={16} />}
-            >
-              {t('statistics.actions.filter')}
-            </Button>
-
-            <Button
-              variant="secondary"
-              icon={<ExportIcon size={16} />}
-              onClick={() => setIsExportModalOpen(true)}
-            >
-              {t('statistics.actions.export')}
-            </Button>
-          </div>
+          <DateRangePicker
+            startDate={startDate}
+            endDate={endDate}
+            onChange={({ start, end }) => {
+              setStartDate(start);
+              setEndDate(end);
+            }}
+          />
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -293,7 +277,7 @@ export default function StatisticsPage() {
                 </p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary-50 text-primary-900">
-                2026
+                {new Date().getFullYear()}
               </span>
             </div>
 
@@ -413,7 +397,7 @@ export default function StatisticsPage() {
                 </p>
               </div>
               <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-700">
-                Volume
+                {t('statistics.charts.volume')}
               </span>
             </div>
 
@@ -462,14 +446,7 @@ export default function StatisticsPage() {
           previousLabel={t('statistics.pagination.previous')}
           nextLabel={t('statistics.pagination.next')}
         />
-
-        <ExportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          title={t('statistics.title')}
-          onSubmit={handleExportSubmit}
-        />
       </div>
-    </DashboardLayout>
+    </>
   );
 }

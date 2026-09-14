@@ -9,6 +9,7 @@ import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { authApi } from '../api/auth.api';
 import { tokenService } from '@/core/auth/token.service';
+import { getSafeRedirectPath } from '@/core/auth/safe-redirect';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['auth']);
@@ -27,7 +28,7 @@ export default function LoginPage() {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!email) {
-      setError('Please enter your email address');
+      setError(t('login.emailRequired'));
       return;
     }
 
@@ -40,11 +41,10 @@ export default function LoginPage() {
           authToken: res.authToken,
           refreshToken: res.refreshToken,
         });
-        const redirect = (router.query.redirect as string) || '/dashboard/statistics';
-        router.replace(redirect);
+        router.replace(getSafeRedirectPath(router.query.redirect));
       }
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : 'Failed to sign in');
+      setError(err instanceof Error ? err.message : t('login.submitError'));
     } finally {
       setIsLoading(false);
     }
@@ -84,10 +84,10 @@ export default function LoginPage() {
             />
             <Button
               type="submit"
-              disabled={isLoading}
+              loading={isLoading}
               className="w-full"
             >
-              {isLoading ? 'Signing in...' : t('login.submit')}
+              {t('login.submit')}
             </Button>
           </form>
         </div>

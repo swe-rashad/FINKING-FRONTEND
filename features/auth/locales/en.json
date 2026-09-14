@@ -3,7 +3,9 @@
     "title": "Login",
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
-    "submit": "Submit"
+    "submit": "Submit",
+    "emailRequired": "Please enter your email address",
+    "submitError": "Failed to sign in"
   },
   "register": {
     "title": "Create account",

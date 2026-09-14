@@ -8,10 +8,11 @@ export async function loadMessages(
 ): Promise<Record<string, unknown>> {
   const messages: Record<string, unknown> = {};
 
-  const { default: shared } = await import(`@/shared/locales/${locale}.json`);
-  messages.shared = shared;
+  const sharedPromise = import(`@/shared/locales/${locale}.json`).then((mod) => {
+    messages.shared = mod.default;
+  });
 
-  for (const domain of domains) {
+  const domainPromises = domains.map(async (domain) => {
     if (domain === 'auth') {
       const { default: auth } = await import(
         `@/features/auth/locales/${locale}.json`
@@ -23,7 +24,9 @@ export async function loadMessages(
       );
       messages.dashboard = dashboard;
     }
-  }
+  });
+
+  await Promise.all([sharedPromise, ...domainPromises]);
 
   return messages;
 }

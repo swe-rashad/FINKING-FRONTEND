@@ -1,21 +1,24 @@
-import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/router';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
-import { DashboardLayout, ExportModal } from '@/features/dashboard';
+import { ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
-import { Button } from '@/shared/components/common/button';
+import { Button } from '@/shared/components/common/Button';
 import { useToast } from '@/shared/components/common/Toast';
-import FilterIcon from '@/features/dashboard/components/icons/FilterIcon';
-import ExportIcon from '@/features/dashboard/components/icons/ExportIcon';
-import ActiveIcon from '@/features/dashboard/components/icons/ActiveIcon';
-import DeclinedIcon from '@/features/dashboard/components/icons/DeclinedIcon';
-import { ArrowRightIcon } from '@/features/dashboard/components/icons/ArrowIcons';
+import {
+  FilterIcon,
+  ExportIcon,
+  ActiveIcon,
+  DeclinedIcon,
+  ArrowRightIcon,
+} from '@/shared/components/icons';
 import type { TransactionItem } from '../interfaces/transaction.interface';
 import { transactionsApi } from '../api/transactions.api';
+import { useTransactions } from '../hooks/useTransactions';
+import { TransactionsFilterModal } from '../components/TransactionsFilterModal';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['dashboard']);
@@ -26,36 +29,33 @@ export default function TransactionsPage() {
   const router = useRouter();
   const t = useTranslations('dashboard');
   const { showToast } = useToast();
-  const [transactions, setTransactions] = useState<TransactionItem[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalCount, setTotalCount] = useState(0);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
-  const fetchTransactions = useCallback((page: number) => {
-    transactionsApi
-      .getTransactions(page, 10)
-      .send()
-      .then((res) => {
-        setTransactions(res.data);
-        setTotalPages(res.totalPages);
-        setTotalCount(res.total);
-        setIsLoading(false);
-      })
-      .catch(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  const {
+    transactions,
+    totalCount,
+    currentPage,
+    totalPages,
+    isLoading,
+    isExportModalOpen,
+    isFilterModalOpen,
+    filters,
+    setPage,
+    openExportModal,
+    closeExportModal,
+    openFilterModal,
+    closeFilterModal,
+    applyFilters,
+    clearFilters,
+  } = useTransactions();
 
-  const handlePageChange = (page: number) => {
-    setIsLoading(true);
-    setCurrentPage(page);
-  };
-
-  useEffect(() => {
-    fetchTransactions(currentPage);
-  }, [currentPage, fetchTransactions]);
+  const hasActiveFilters = Boolean(
+    filters.sender ||
+      filters.receiver ||
+      (filters.status && filters.status !== 'all') ||
+      (filters.type && filters.type !== 'all') ||
+      filters.minAmount ||
+      filters.maxAmount
+  );
 
   const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
     await transactionsApi.exportTransactions(format, email).send();
@@ -125,11 +125,18 @@ export default function TransactionsPage() {
     {
       key: 'type',
       header: t('transactions.columns.type'),
-      render: (item) => (
-        <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">
-          {item.type}
-        </span>
-      ),
+      render: (item) => {
+        const typeMap: Record<string, string> = {
+          Transfer: t('transactions.types.transfer'),
+          Payment: t('transactions.types.payment'),
+          'Top-up': t('transactions.types.topUp'),
+        };
+        return (
+          <span className="px-2.5 py-1 rounded-lg text-xs font-medium bg-gray-100 text-gray-700">
+            {typeMap[item.type] || item.type}
+          </span>
+        );
+      },
     },
     {
       key: 'status',
@@ -177,12 +184,12 @@ export default function TransactionsPage() {
               router.push(`/dashboard/transactions/${item.id}`);
             }}
           >
-            Details
+            {t('transactions.actions.details')}
           </Button>
           <button
             type="button"
-            title="Details"
-            aria-label="View transaction details"
+            title={t('transactions.actions.details')}
+            aria-label={t('transactions.actions.viewDetails')}
             onClick={(e) => {
               e.stopPropagation();
               router.push(`/dashboard/transactions/${item.id}`);
@@ -197,7 +204,7 @@ export default function TransactionsPage() {
   ];
 
   return (
-    <DashboardLayout>
+    <>
       <Head>
         <title>{t('transactions.title')}</title>
       </Head>
@@ -209,16 +216,33 @@ export default function TransactionsPage() {
 
           <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <Button
-              variant="secondary"
+              variant={hasActiveFilters ? 'primary' : 'secondary'}
               icon={<FilterIcon size={16} />}
+              onClick={openFilterModal}
+              className="relative"
             >
-              {t('transactions.actions.filter')}
+              <span>{t('transactions.actions.filter')}</span>
+              {hasActiveFilters && (
+                <span className="ml-1 px-1.5 py-0.5 bg-white/20 text-white rounded-full text-xs font-semibold">
+                  •
+                </span>
+              )}
             </Button>
+
+            {hasActiveFilters && (
+              <Button
+                variant="outline"
+                onClick={clearFilters}
+                className="text-xs text-gray-500 hover:text-gray-700"
+              >
+                {t('transactions.filterModal.reset')}
+              </Button>
+            )}
 
             <Button
               variant="secondary"
               icon={<ExportIcon size={16} />}
-              onClick={() => setIsExportModalOpen(true)}
+              onClick={openExportModal}
             >
               {t('transactions.actions.export')}
             </Button>
@@ -240,18 +264,30 @@ export default function TransactionsPage() {
         <Pagination
           currentPage={currentPage}
           totalPages={totalPages}
-          onPageChange={handlePageChange}
+          onPageChange={setPage}
           previousLabel={t('transactions.pagination.previous')}
           nextLabel={t('transactions.pagination.next')}
         />
 
-        <ExportModal
-          isOpen={isExportModalOpen}
-          onClose={() => setIsExportModalOpen(false)}
-          title={t('transactions.title')}
-          onSubmit={handleExportSubmit}
-        />
+        {isFilterModalOpen && (
+          <TransactionsFilterModal
+            isOpen
+            onClose={closeFilterModal}
+            filters={filters}
+            onApply={applyFilters}
+            onReset={clearFilters}
+          />
+        )}
+
+        {isExportModalOpen && (
+          <ExportModal
+            isOpen
+            onClose={closeExportModal}
+            title={t('transactions.title')}
+            onSubmit={handleExportSubmit}
+          />
+        )}
       </div>
-    </DashboardLayout>
+    </>
   );
 }

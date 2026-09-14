@@ -4,9 +4,27 @@
   },
   "common": {
     "loading": "Loading...",
+    "empty": "No data available",
+    "close": "Close",
     "error": "Something went wrong",
     "back": "Back",
-    "goHome": "Go back home"
+    "goHome": "Go back home",
+    "pagination": "Pagination"
+  },
+  "dateRange": {
+    "label": "Date range",
+    "apply": "Apply",
+    "cancel": "Cancel",
+    "pickEnd": "Select an end date",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "presets": {
+      "thisMonth": "This month",
+      "last30Days": "Last 30 days",
+      "last3Months": "Last 3 months",
+      "last6Months": "Last 6 months",
+      "yearToDate": "Year to date"
+    }
   },
   "errors": {
     "notFound": {
