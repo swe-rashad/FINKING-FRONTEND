@@ -15,18 +15,18 @@ This frontend connects to the [FinKing Backend API](https://github.com/swe-rasha
 
 ---
 
-## 🚀 Main Features
+## Main Features
 
-- **📊 Statistics & Analytics**: Dashboard with key metrics (Total Revenue, Transaction Count, Active Users, Average Amount), monthly revenue charts, and category breakdown. Includes asynchronous Excel report exports via email.
-- **💸 Transaction Management**: Paginated transaction table with filters for status, type, date range, currency, sender, and receiver. Supports single transaction details and background Excel exports.
-- **👥 User Management**: User directory with role filtering (Admin, Employee, Customer), user editing, creation, and one-click account blocking/unblocking with instant UI updates.
-- **🏢 Merchant Profile**: View and update current merchant account settings.
-- **🔐 Authentication & Access Control**: Full JWT auth flow (sign-in, sign-up, token refresh, and logout). The sidebar, page routes, and action buttons automatically adapt to the user's role and assigned permissions.
-- **⚡ Dual Mode (Mock & Live)**: Includes a built-in mock adapter (`@alova/mock`) for frontend-only development, which can easily be switched to the live backend API.
+- **Statistics & Analytics**: Dashboard with key metrics (Total Revenue, Transaction Count, Active Users, Average Amount), monthly revenue charts, and category breakdown. Includes asynchronous Excel report exports via email.
+- **Transaction Management**: Paginated transaction table with filters for status, type, date range, currency, sender, and receiver. Supports single transaction details and background Excel exports.
+- **User Management**: User directory with role filtering (Admin, Employee, Customer), user editing, creation, and one-click account blocking/unblocking with instant UI updates.
+- **Merchant Profile**: View and update current merchant account settings.
+- **Authentication & Access Control**: Full JWT auth flow (sign-in, sign-up, token refresh, and logout). The sidebar, page routes, and action buttons automatically adapt to the user's role and assigned permissions.
+- **Dual Mode (Mock & Live)**: Includes a built-in mock adapter (`@alova/mock`) for frontend-only development, which can easily be switched to the live backend API.
 
 ---
 
-## 🏗️ Project Architecture
+## Project Architecture
 
 The project is organized using **Feature-Sliced Design (FSD)**. The `pages/` directory only handles routing, while business logic, UI components, Redux slices, and API calls are grouped inside their respective feature folders under `features/`.
 
@@ -65,7 +65,7 @@ flowchart TB
   alova --> backendLayer
 ```
 
-### 📁 Directory Layout
+### Directory Layout
 
 ```
 pages/                 Next.js routing surface only (re-exports feature pages)
@@ -90,7 +90,7 @@ shared/
 
 ---
 
-## 🔌 API Integration Mapping with FINKING-BACKEND
+## API Integration Mapping with FINKING-BACKEND
 
 | Frontend Feature | API Endpoint | HTTP Method | Backend Service |
 | --- | --- | --- | --- |
@@ -120,7 +120,7 @@ shared/
 
 ---
 
-## 🛠️ Technology Stack Detail
+## Technology Stack Detail
 
 - **Next.js 16 (Pages Router)**: Modern React SSR/SSG web framework with fast page loads and localized static prop resolution.
 - **React 19**: Concurrent renderer with enhanced hooks.
@@ -132,7 +132,7 @@ shared/
 
 ---
 
-## 💻 Quick Start & Running Locally
+## Quick Start & Running Locally
 
 ### Prerequisites
 - Node.js 20+
@@ -162,7 +162,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 📜 Available NPM Scripts
+## Available NPM Scripts
 
 | Script | Command | Description |
 | --- | --- | --- |
@@ -176,12 +176,12 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ---
 
-## 🔗 Related Repositories
+## Related Repositories
 
-- ⚙️ **Backend Application**: [swe-rashad/FINKING-BACKEDN](https://github.com/swe-rashad/FINKING-BACKEDN) — NestJS 11, PostgreSQL, TypeORM, BullMQ Queue Engine, Redis Token Rotation, Swagger API Docs.
+- **Backend Application**: [swe-rashad/FINKING-BACKEDN](https://github.com/swe-rashad/FINKING-BACKEDN) — NestJS 11, PostgreSQL, TypeORM, BullMQ Queue Engine, Redis Token Rotation, Swagger API Docs.
 
 ---
 
-## 📄 License
+## License
 
 Distributed under the MIT License. See `LICENSE` for more information.
