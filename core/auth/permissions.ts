@@ -1,44 +1,85 @@
 import type { CurrentUserResponse } from '@/features/users/interfaces/user.interface';
 
-export function hasPermission(
+export enum UserRole {
+  ADMIN = 'admin',
+  EMPLOYEE = 'employee',
+  CUSTOMER = 'customer',
+}
+
+export type PermissionAction =
+  | 'users:read'
+  | 'users:create'
+  | 'users:update'
+  | 'users:delete'
+  | 'users:block'
+  | 'transactions:read'
+  | 'transactions:export'
+  | 'statistics:read'
+  | 'statistics:export'
+  | 'merchant:read'
+  | 'merchant:update';
+
+export function canAccess(
+  user: CurrentUserResponse | null,
+  action: PermissionAction | string
+): boolean {
+  if (!user) return false;
+  if (user.status === 'blocked') return false;
+
+  const role = String(user.role);
+  if (role === UserRole.ADMIN) return true;
+
+  const permissions = user.permissions || [];
+  if (permissions.includes(action as PermissionAction)) return true;
+
+  switch (action) {
+    case 'users:read':
+    case 'users:create':
+      return role === UserRole.EMPLOYEE;
+    case 'users:update':
+    case 'users:delete':
+    case 'users:block':
+      return false;
+    case 'transactions:read':
+      return role === UserRole.EMPLOYEE || role === UserRole.CUSTOMER;
+    case 'transactions:export':
+      return false;
+    case 'statistics:read':
+    case 'statistics:export':
+      return false;
+    case 'merchant:read':
+    case 'merchant:update':
+      return role === UserRole.EMPLOYEE;
+    default:
+      return false;
+  }
+}
+
+export function hasPathAccess(
   user: CurrentUserResponse | null,
   path: string
 ): boolean {
   if (!user) return true;
-
-  const role = String(user.role);
-
-  if (user.status === 'blocked') {
-    return false;
-  }
-
-  if (role === 'admin') {
-    return true;
-  }
-
-  const permissions = user.permissions || [];
+  if (user.status === 'blocked') return false;
 
   if (path.includes('/dashboard/users')) {
-    if (permissions.length > 0) return permissions.includes('users:read');
-    return role === 'admin' || role === 'employee';
+    return canAccess(user, 'users:read');
   }
 
   if (path.includes('/dashboard/statistics')) {
-    if (permissions.length > 0) return permissions.includes('statistics:read');
-    return role === 'admin' || role === 'employee';
+    return canAccess(user, 'statistics:read');
   }
 
   if (path.includes('/dashboard/transactions')) {
-    if (permissions.length > 0) return permissions.includes('transactions:read');
-    return true;
+    return canAccess(user, 'transactions:read');
   }
 
   return true;
 }
 
 export function getDefaultDashboardRoute(user: CurrentUserResponse | null): string {
-  if (hasPermission(user, '/dashboard/statistics')) return '/dashboard/statistics';
-  if (hasPermission(user, '/dashboard/transactions')) return '/dashboard/transactions';
-  if (hasPermission(user, '/dashboard/users')) return '/dashboard/users';
+  if (hasPathAccess(user, '/dashboard/statistics')) return '/dashboard/statistics';
+  if (hasPathAccess(user, '/dashboard/transactions')) return '/dashboard/transactions';
+  if (hasPathAccess(user, '/dashboard/users')) return '/dashboard/users';
   return '/dashboard/transactions';
 }

@@ -10,7 +10,7 @@ import StatisticsIcon from '@/features/dashboard/components/icons/StatisticsIcon
 import SidebarArrowIcon from '@/features/dashboard/components/icons/SidebarArrowIcon';
 import { CloseIcon } from '@/shared/components/icons';
 import { useAppSelector } from '@/core/store';
-import { hasPermission } from '@/core/auth/permissions';
+import { hasPathAccess } from '@/core/auth/permissions';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -49,7 +49,7 @@ export default function Sidebar({
   const compact = collapsed && !mobileOpen;
 
   const visibleNavItems = NAV_ITEMS.filter(({ href }) =>
-    hasPermission(currentUser, href)
+    hasPathAccess(currentUser, href)
   );
 
   const toggleTitle = compact

@@ -14,7 +14,7 @@ import {
 } from '@/shared/hooks';
 import { useAppDispatch, useAppSelector } from '@/core/store';
 import { fetchCurrentUser } from '@/features/auth';
-import { getDefaultDashboardRoute, hasPermission } from '@/core/auth/permissions';
+import { getDefaultDashboardRoute, hasPathAccess } from '@/core/auth/permissions';
 
 const SIDEBAR_COLLAPSED_KEY = 'finking_sidebar_collapsed';
 
@@ -51,7 +51,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     setCollapsed((prev) => !prev);
   }, [setCollapsed]);
 
-  const isAllowed = hasPermission(currentUser, router.pathname);
+  const isAllowed = hasPathAccess(currentUser, router.pathname);
 
   return (
     <AuthGuard>

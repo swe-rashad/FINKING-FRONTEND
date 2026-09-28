@@ -19,6 +19,7 @@ import type { TransactionItem } from '../interfaces/transaction.interface';
 import { transactionsApi } from '../api/transactions.api';
 import { useTransactions } from '../hooks/useTransactions';
 import { TransactionsFilterModal } from '../components/TransactionsFilterModal';
+import { usePermission } from '@/shared/hooks';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['dashboard']);
@@ -29,6 +30,7 @@ export default function TransactionsPage() {
   const router = useRouter();
   const t = useTranslations('dashboard');
   const { showToast } = useToast();
+  const { canTransactionsExport } = usePermission();
 
   const {
     transactions,
@@ -239,13 +241,15 @@ export default function TransactionsPage() {
               </Button>
             )}
 
-            <Button
-              variant="secondary"
-              icon={<ExportIcon size={16} />}
-              onClick={openExportModal}
-            >
-              {t('transactions.actions.export')}
-            </Button>
+            {canTransactionsExport && (
+              <Button
+                variant="secondary"
+                icon={<ExportIcon size={16} />}
+                onClick={openExportModal}
+              >
+                {t('transactions.actions.export')}
+              </Button>
+            )}
           </div>
         </div>
 

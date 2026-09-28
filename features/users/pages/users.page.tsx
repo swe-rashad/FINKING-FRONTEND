@@ -16,6 +16,7 @@ import { useUsers } from '../hooks/useUsers';
 import { UserFormModal } from '../components/UserFormModal';
 import { UsersFilterModal } from '../components/UsersFilterModal';
 import type { BackendUser } from '../interfaces/user.interface';
+import { usePermission } from '@/shared/hooks';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['dashboard']);
@@ -24,6 +25,7 @@ export async function getStaticProps() {
 
 export default function UsersPage() {
   const t = useTranslations('dashboard');
+  const { canUsersCreate, canUsersUpdate, canUsersBlock, canUsersDelete } = usePermission();
   const {
     users,
     totalCount,
@@ -47,6 +49,7 @@ export default function UsersPage() {
     createUser,
     updateUser,
     blockUser,
+    deleteUser,
   } = useUsers();
 
   const hasActiveFilters = Boolean(
@@ -98,16 +101,32 @@ export default function UsersPage() {
       header: t('users.columns.status'),
       render: (item) => {
         const isActive = item.status === 'active';
+        if (canUsersBlock) {
+          return (
+            <button
+              type="button"
+              onClick={async (e) => {
+                e.stopPropagation();
+                await blockUser(item.id);
+              }}
+              title="Click to toggle user status"
+              className={`inline-flex cursor-pointer items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-transform active:scale-95 ${
+                isActive ? 'bg-[#E8F8EE] text-[#12B76A] hover:bg-emerald-100' : 'bg-[#FEF3F2] text-[#F04438] hover:bg-red-100'
+              }`}
+            >
+              {isActive ? (
+                <ActiveIcon size={14} className="text-[#12B76A]" />
+              ) : (
+                <DeclinedIcon size={14} className="text-[#F04438]" />
+              )}
+              <span>{isActive ? t('users.status.active') : t('users.status.blocked')}</span>
+            </button>
+          );
+        }
         return (
-          <button
-            type="button"
-            onClick={async (e) => {
-              e.stopPropagation();
-              await blockUser(item.id);
-            }}
-            title="Click to toggle user status"
-            className={`inline-flex cursor-pointer items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-transform active:scale-95 ${
-              isActive ? 'bg-[#E8F8EE] text-[#12B76A] hover:bg-emerald-100' : 'bg-[#FEF3F2] text-[#F04438] hover:bg-red-100'
+          <span
+            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
+              isActive ? 'bg-[#E8F8EE] text-[#12B76A]' : 'bg-[#FEF3F2] text-[#F04438]'
             }`}
           >
             {isActive ? (
@@ -116,7 +135,7 @@ export default function UsersPage() {
               <DeclinedIcon size={14} className="text-[#F04438]" />
             )}
             <span>{isActive ? t('users.status.active') : t('users.status.blocked')}</span>
-          </button>
+          </span>
         );
       },
     },
@@ -124,22 +143,39 @@ export default function UsersPage() {
       key: 'actions',
       header: '',
       align: 'right',
-      width: '5.5rem',
+      width: '7.5rem',
       render: (item) => (
-        <div className="flex items-center justify-end ml-auto w-full sm:w-auto">
-          <Button
-            variant="secondary"
-            size="sm"
-            icon={<EditIcon size={14} className="text-primary-500" />}
-            onClick={(e) => {
-              e.stopPropagation();
-              openEditModal(item);
-            }}
-            className="flex-1 sm:flex-initial text-primary-900 bg-primary-50 hover:bg-primary-100/80 border border-primary-200/60 font-semibold"
-          >
-            <span className="inline sm:hidden">{t('users.actions.editUser')}</span>
-            <span className="hidden sm:inline">{t('users.actions.edit')}</span>
-          </Button>
+        <div className="flex items-center justify-end gap-2 ml-auto w-full sm:w-auto">
+          {canUsersUpdate && (
+            <Button
+              variant="secondary"
+              size="sm"
+              icon={<EditIcon size={14} className="text-primary-500" />}
+              onClick={(e) => {
+                e.stopPropagation();
+                openEditModal(item);
+              }}
+              className="text-primary-900 bg-primary-50 hover:bg-primary-100/80 border border-primary-200/60 font-semibold"
+            >
+              <span className="inline sm:hidden">{t('users.actions.editUser')}</span>
+              <span className="hidden sm:inline">{t('users.actions.edit')}</span>
+            </Button>
+          )}
+          {canUsersDelete && (
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={async (e) => {
+                e.stopPropagation();
+                if (confirm('Are you sure you want to delete this user?')) {
+                  await deleteUser(item.id);
+                }
+              }}
+              className="text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 font-semibold"
+            >
+              <span>{t('users.actions.delete')}</span>
+            </Button>
+          )}
         </div>
       ),
     },
@@ -169,13 +205,15 @@ export default function UsersPage() {
               )}
             </Button>
 
-            <Button
-              variant="primary"
-              icon={<CreateUserIcon size={18} />}
-              onClick={openCreateModal}
-            >
-              {t('users.actions.createUser')}
-            </Button>
+            {canUsersCreate && (
+              <Button
+                variant="primary"
+                icon={<CreateUserIcon size={18} />}
+                onClick={openCreateModal}
+              >
+                {t('users.actions.createUser')}
+              </Button>
+            )}
           </div>
         </div>
 
