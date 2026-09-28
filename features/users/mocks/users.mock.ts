@@ -1,150 +1,27 @@
 import { defineMock } from '@alova/mock';
 import { paginateMock } from '@/core/utils/mock-pagination';
-import type { UserItem } from '../interfaces/user.interface';
+import type { BackendUser } from '../interfaces/user.interface';
 
-const initialUsers: UserItem[] = [
-  {
-    id: 1,
-    no: 1,
-    username: 'lucasweber',
-    firstName: 'Lucas',
-    lastName: 'Weber',
-    email: 'lucas.weber@company.de',
-    role: 'Customer',
-    status: 'Active',
-  },
-  {
-    id: 2,
-    no: 2,
-    username: 'emmawatson',
-    firstName: 'Emma',
-    lastName: 'Watson',
-    email: 'emma.watson@enterprise.co.uk',
-    role: 'Employee',
-    status: 'Blocked',
-  },
-  {
-    id: 3,
-    no: 3,
-    username: 'alexdupont',
-    firstName: 'Alexandre',
-    lastName: 'Dupont',
-    email: 'alexandre.dupont@banque.fr',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 4,
-    no: 4,
-    username: 'sofiarossi',
-    firstName: 'Sofia',
-    lastName: 'Rossi',
-    email: 'sofia.rossi@finanza.it',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 5,
-    no: 5,
-    username: 'matteomueller',
-    firstName: 'Matteo',
-    lastName: 'Müller',
-    email: 'matteo.mueller@corp.de',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 6,
-    no: 6,
-    username: 'camillelaurent',
-    firstName: 'Camille',
-    lastName: 'Laurent',
-    email: 'camille.laurent@finance.fr',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 7,
-    no: 7,
-    username: 'oliverdavies',
-    firstName: 'Oliver',
-    lastName: 'Davies',
-    email: 'oliver.davies@investments.co.uk',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 8,
-    no: 8,
-    username: 'elenagarcia',
-    firstName: 'Elena',
-    lastName: 'Garcia',
-    email: 'elena.garcia@banco.es',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 9,
-    no: 9,
-    username: 'larslindqvist',
-    firstName: 'Lars',
-    lastName: 'Lindqvist',
-    email: 'lars.lindqvist@nordic.se',
-    role: 'Employee',
-    status: 'Active',
-  },
-  {
-    id: 10,
-    no: 10,
-    username: 'charlottedubois',
-    firstName: 'Charlotte',
-    lastName: 'Dubois',
-    email: 'charlotte.dubois@capital.fr',
-    role: 'Customer',
-    status: 'Active',
-  },
+const usersStore: BackendUser[] = [
+  { id: 1, createdAt: '2026-01-01', updatedAt: '2026-01-01', email: 'lucas.weber@company.de', name: 'Lucas', lastname: 'Weber', verificated: true, status: 'active', role: 'customer' },
+  { id: 2, createdAt: '2026-01-02', updatedAt: '2026-01-02', email: 'emma.watson@enterprise.co.uk', name: 'Emma', lastname: 'Watson', verificated: true, status: 'blocked', role: 'employee' },
+  { id: 3, createdAt: '2026-01-03', updatedAt: '2026-01-03', email: 'alexandre.dupont@banque.fr', name: 'Alexandre', lastname: 'Dupont', verificated: true, status: 'active', role: 'employee' },
+  { id: 4, createdAt: '2026-01-04', updatedAt: '2026-01-04', email: 'sofia.rossi@finanza.it', name: 'Sofia', lastname: 'Rossi', verificated: true, status: 'active', role: 'employee' },
+  { id: 5, createdAt: '2026-01-05', updatedAt: '2026-01-05', email: 'matteo.mueller@corp.de', name: 'Matteo', lastname: 'Müller', verificated: true, status: 'active', role: 'employee' },
+  { id: 6, createdAt: '2026-01-06', updatedAt: '2026-01-06', email: 'camille.laurent@finance.fr', name: 'Camille', lastname: 'Laurent', verificated: false, status: 'active', role: 'employee' },
+  { id: 7, createdAt: '2026-01-07', updatedAt: '2026-01-07', email: 'oliver.davies@investments.co.uk', name: 'Oliver', lastname: 'Davies', verificated: true, status: 'active', role: 'employee' },
+  { id: 8, createdAt: '2026-01-08', updatedAt: '2026-01-08', email: 'elena.garcia@banco.es', name: 'Elena', lastname: 'Garcia', verificated: true, status: 'active', role: 'employee' },
+  { id: 9, createdAt: '2026-01-09', updatedAt: '2026-01-09', email: 'lars.lindqvist@nordic.se', name: 'Lars', lastname: 'Lindqvist', verificated: true, status: 'active', role: 'employee' },
+  { id: 10, createdAt: '2026-01-10', updatedAt: '2026-01-10', email: 'charlotte.dubois@capital.fr', name: 'Charlotte', lastname: 'Dubois', verificated: true, status: 'active', role: 'customer' },
 ];
 
-const usersStore: UserItem[] = [...initialUsers];
-
 export const usersMock = defineMock({
-  '[GET]/api/users/export': ({ query }) => {
-    const format = (query?.format as string) || 'csv';
-    if (format === 'json') {
-      return {
-        data: JSON.stringify(usersStore, null, 2),
-        filename: 'users-export.json',
-        total: usersStore.length,
-      };
-    }
-    const headers = ['No', 'Username', 'First Name', 'Last Name', 'Email', 'Role', 'Status'];
-    const rows = usersStore.map((u, idx) => [
-      idx + 1,
-      `"${u.username}"`,
-      `"${u.firstName || ''}"`,
-      `"${u.lastName || ''}"`,
-      `"${u.email}"`,
-      `"${u.role}"`,
-      `"${u.status}"`,
-    ]);
-    const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
-    return {
-      data: csvContent,
-      filename: 'users-export.csv',
-      total: usersStore.length,
-    };
-  },
-
-  '[GET]/api/users': ({ query }) => {
+  '[GET]/users': ({ query }) => {
     let filtered = [...usersStore];
     if (query.name) {
       const name = String(query.name).toLowerCase();
       filtered = filtered.filter(
-        (u) =>
-          u.username.toLowerCase().includes(name) ||
-          u.firstName.toLowerCase().includes(name) ||
-          u.lastName.toLowerCase().includes(name) ||
-          `${u.firstName} ${u.lastName}`.toLowerCase().includes(name)
+        (u) => u.name.toLowerCase().includes(name) || u.lastname.toLowerCase().includes(name)
       );
     }
     if (query.email) {
@@ -152,54 +29,71 @@ export const usersMock = defineMock({
       filtered = filtered.filter((u) => u.email.toLowerCase().includes(email));
     }
     if (query.role && query.role !== 'all') {
-      const role = String(query.role).toLowerCase();
-      filtered = filtered.filter((u) => u.role.toLowerCase() === role);
+      filtered = filtered.filter((u) => u.role === String(query.role).toLowerCase());
     }
     if (query.status && query.status !== 'all') {
-      const status = String(query.status).toLowerCase();
-      filtered = filtered.filter((u) => u.status.toLowerCase() === status);
+      filtered = filtered.filter((u) => u.status === String(query.status).toLowerCase());
     }
-
     return paginateMock(filtered, query);
   },
 
-  '[POST]/api/users': ({ data }) => {
-    const newId = Date.now();
-    const newUser: UserItem = {
-      id: newId,
-      no: usersStore.length + 1,
-      username: data.username,
-      firstName: data.firstName || '',
-      lastName: data.lastName || '',
+  '[POST]/users/create': ({ data }) => {
+    const newUser: BackendUser = {
+      id: Date.now(),
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       email: data.email,
-      role: data.role || 'Customer',
-      status: data.status || 'Active',
+      name: data.name || '',
+      lastname: data.lastname || '',
+      verificated: data.verificated ?? false,
+      status: data.status || 'forceChangePassword',
+      role: data.role || 'employee',
     };
     usersStore.unshift(newUser);
     return newUser;
   },
 
-  '[PUT]/api/users/{id}': ({ params, data }) => {
-    const numericId = Number(params.id);
-    const index = usersStore.findIndex((u) => u.id === numericId);
-    if (index !== -1) {
-      usersStore[index] = {
-        ...usersStore[index],
-        ...data,
-        id: numericId,
-      };
-      return usersStore[index];
-    }
-    return { id: numericId, ...data };
+  '[GET]/users/{id}': ({ params }) => {
+    const id = Number(params.id);
+    return usersStore.find((u) => u.id === id) || usersStore[0];
   },
 
-  '[DELETE]/api/users/{id}': ({ params }) => {
-    const numericId = Number(params.id);
-    const index = usersStore.findIndex((u) => u.id === numericId);
+  '[PUT]/users/{id}': ({ params, data }) => {
+    const id = Number(params.id);
+    const index = usersStore.findIndex((u) => u.id === id);
     if (index !== -1) {
-      const deleted = usersStore.splice(index, 1)[0];
-      return deleted;
+      usersStore[index] = { ...usersStore[index], ...data, updatedAt: new Date().toISOString() };
+      return usersStore[index];
     }
-    return { id: numericId };
+    return { id, ...data };
+  },
+
+  '[PATCH]/users/{id}': ({ params, data }) => {
+    const id = Number(params.id);
+    const index = usersStore.findIndex((u) => u.id === id);
+    if (index !== -1) {
+      usersStore[index] = { ...usersStore[index], ...data, updatedAt: new Date().toISOString() };
+      return usersStore[index];
+    }
+    return { id, ...data };
+  },
+
+  '[PATCH]/users/{id}/block': ({ params }) => {
+    const id = Number(params.id);
+    const index = usersStore.findIndex((u) => u.id === id);
+    if (index !== -1) {
+      const current = usersStore[index].status;
+      usersStore[index].status = current === 'blocked' ? 'active' : 'blocked';
+      usersStore[index].updatedAt = new Date().toISOString();
+      return usersStore[index];
+    }
+    return { id, status: 'blocked' };
+  },
+
+  '[DELETE]/users/{id}': ({ params }) => {
+    const id = Number(params.id);
+    const index = usersStore.findIndex((u) => u.id === id);
+    if (index !== -1) usersStore.splice(index, 1);
+    return {};
   },
 });

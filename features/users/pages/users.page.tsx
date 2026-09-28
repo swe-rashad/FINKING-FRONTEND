@@ -1,26 +1,21 @@
-import { useState } from 'react';
 import Head from 'next/head';
 import { useTranslations } from 'next-intl';
-import { ExportModal } from '@/features/dashboard';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { Table, Column } from '@/shared/components/common/Table';
 import { Pagination } from '@/shared/components/common/Pagination';
 import { Button } from '@/shared/components/common/Button';
-import { useToast } from '@/shared/components/common/Toast';
 import {
   FilterIcon,
-  ExportIcon,
   CreateUserIcon,
   ActiveIcon,
   DeclinedIcon,
   EditIcon,
 } from '@/shared/components/icons';
 import { useUsers } from '../hooks/useUsers';
-import { usersApi } from '../api/users.api';
 import { UserFormModal } from '../components/UserFormModal';
 import { UsersFilterModal } from '../components/UsersFilterModal';
-import type { UserItem } from '../interfaces/user.interface';
+import type { BackendUser } from '../interfaces/user.interface';
 
 export async function getStaticProps() {
   const messages = await loadMessages(defaultLocale, ['dashboard']);
@@ -29,7 +24,6 @@ export async function getStaticProps() {
 
 export default function UsersPage() {
   const t = useTranslations('dashboard');
-  const { showToast } = useToast();
   const {
     users,
     totalCount,
@@ -54,7 +48,6 @@ export default function UsersPage() {
     updateUser,
   } = useUsers();
 
-  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
   const hasActiveFilters = Boolean(
     filters.name ||
       filters.email ||
@@ -62,54 +55,22 @@ export default function UsersPage() {
       (filters.status && filters.status !== 'all')
   );
 
-  const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
-    await usersApi.exportUsers(format, email).send();
-    showToast({
-      type: 'success',
-      title: t('exportModal.title'),
-      message: t('exportModal.toastSuccess'),
-    });
-  };
-
-  const columns: Column<UserItem>[] = [
+  const columns: Column<BackendUser>[] = [
     {
-      key: 'no',
-      header: t('users.columns.no'),
-      width: '3.25rem',
-      render: (item) => (
-        <span
-          className={item.status === 'Blocked' ? 'text-gray-400 font-normal' : 'text-gray-900 font-medium'}
-        >
-          {item.no}
-        </span>
-      ),
-    },
-    {
-      key: 'username',
-      header: t('users.columns.username'),
-      render: (item) => (
-        <span
-          className={item.status === 'Blocked' ? 'text-gray-400 font-normal' : 'text-gray-900 font-medium'}
-        >
-          {item.username}
-        </span>
-      ),
-    },
-    {
-      key: 'firstName',
+      key: 'name',
       header: t('users.columns.firstName'),
       render: (item) => (
-        <span className={item.status === 'Blocked' ? 'text-gray-400' : 'text-gray-600'}>
-          {item.firstName}
+        <span className={item.status === 'blocked' ? 'text-gray-400 font-normal' : 'text-gray-900 font-medium'}>
+          {item.name}
         </span>
       ),
     },
     {
-      key: 'lastName',
+      key: 'lastname',
       header: t('users.columns.lastName'),
       render: (item) => (
-        <span className={item.status === 'Blocked' ? 'text-gray-400' : 'text-gray-600'}>
-          {item.lastName}
+        <span className={item.status === 'blocked' ? 'text-gray-400' : 'text-gray-600'}>
+          {item.lastname}
         </span>
       ),
     },
@@ -117,7 +78,7 @@ export default function UsersPage() {
       key: 'email',
       header: t('users.columns.email'),
       render: (item) => (
-        <span className={item.status === 'Blocked' ? 'text-gray-400' : 'text-gray-600'}>
+        <span className={item.status === 'blocked' ? 'text-gray-400' : 'text-gray-600'}>
           {item.email}
         </span>
       ),
@@ -126,8 +87,8 @@ export default function UsersPage() {
       key: 'role',
       header: t('users.columns.role'),
       render: (item) => (
-        <span className={item.status === 'Blocked' ? 'text-gray-400' : 'text-gray-600'}>
-          {item.role === 'Customer' ? t('users.roles.customer') : t('users.roles.employee')}
+        <span className={item.status === 'blocked' ? 'text-gray-400' : 'text-gray-600'}>
+          {item.role === 'customer' ? t('users.roles.customer') : t('users.roles.employee')}
         </span>
       ),
     },
@@ -135,7 +96,7 @@ export default function UsersPage() {
       key: 'status',
       header: t('users.columns.status'),
       render: (item) => {
-        const isActive = item.status === 'Active';
+        const isActive = item.status === 'active';
         return (
           <span
             className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
@@ -202,14 +163,6 @@ export default function UsersPage() {
             </Button>
 
             <Button
-              variant="secondary"
-              icon={<ExportIcon size={16} />}
-              onClick={() => setIsExportModalOpen(true)}
-            >
-              {t('users.actions.export')}
-            </Button>
-
-            <Button
               variant="primary"
               icon={<CreateUserIcon size={18} />}
               onClick={openCreateModal}
@@ -223,7 +176,7 @@ export default function UsersPage() {
           {t('users.rowCount', { count: totalCount })}
         </p>
 
-        <Table<UserItem>
+        <Table<BackendUser>
           columns={columns}
           data={users}
           isLoading={isLoading}
@@ -266,15 +219,6 @@ export default function UsersPage() {
             filters={filters}
             onApply={applyFilters}
             onReset={clearFilters}
-          />
-        )}
-
-        {isExportModalOpen && (
-          <ExportModal
-            isOpen
-            onClose={() => setIsExportModalOpen(false)}
-            title={t('users.title')}
-            onSubmit={handleExportSubmit}
           />
         )}
       </div>

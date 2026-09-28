@@ -8,4 +8,5 @@ export interface DateRangePickerProps {
   endDate: string;
   onChange: (range: DateRange) => void;
   className?: string;
+  maxDays?: number;
 }

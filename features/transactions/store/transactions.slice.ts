@@ -106,7 +106,61 @@ export const transactionsSlice = createSlice({
       })
       .addCase(fetchTransactions.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.transactions = action.payload.data;
+        const rawList = action.payload.data || [];
+        state.transactions = rawList.map((t, index) => {
+          if ('transactionId' in t) {
+            const rawType = (t.type || '').toLowerCase();
+            const uiType =
+              rawType === 'transfer'
+                ? 'Transfer'
+                : rawType === 'payment'
+                ? 'Payment'
+                : 'Top-up';
+            const rawStatus = (t.status || '').toLowerCase();
+            const uiStatus =
+              rawStatus === 'completed'
+                ? 'Completed'
+                : rawStatus === 'pending'
+                ? 'Pending'
+                : 'Failed';
+            const currencySign =
+              (t.currency || '').toUpperCase() === 'USD'
+                ? '$'
+                : (t.currency || '').toUpperCase() === 'GBP'
+                ? '£'
+                : '€';
+
+            return {
+              id: String(t.transactionId),
+              no:
+                (action.payload.page - 1) *
+                  (action.payload.limit || state.pageSize) +
+                index +
+                1,
+              sender: t.sender || '-',
+              receiver: t.merchantName || t.receiver || '-',
+              amount: `${currencySign}${Number(t.amount || 0).toLocaleString(
+                'en-US',
+                {
+                  minimumFractionDigits: 2,
+                  maximumFractionDigits: 2,
+                }
+              )}`,
+              date: t.dateOfOperation
+                ? new Date(t.dateOfOperation).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })
+                : '-',
+              type: uiType,
+              status: uiStatus,
+            };
+          }
+          return t;
+        });
         state.totalCount = action.payload.total;
         state.currentPage = action.payload.page;
         state.totalPages = action.payload.totalPages;

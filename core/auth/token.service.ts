@@ -39,17 +39,20 @@ export const tokenService = {
 
   setTokens({
     authToken,
+    accessToken,
     refreshToken,
   }: {
-    authToken: string;
+    authToken?: string;
+    accessToken?: string;
     refreshToken: string;
   }): void {
+    const token = accessToken || authToken || '';
     if (typeof window === 'undefined') return;
     try {
-      localStorage.setItem(AUTH_TOKEN_KEY, authToken);
+      localStorage.setItem(AUTH_TOKEN_KEY, token);
       localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
     } catch { }
-    setCookie(AUTH_TOKEN_KEY, authToken, 1);
+    setCookie(AUTH_TOKEN_KEY, token, 1);
     setCookie(REFRESH_TOKEN_KEY, refreshToken, 7);
   },
 

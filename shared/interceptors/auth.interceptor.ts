@@ -38,13 +38,28 @@ export const authResponseInterceptor = async (
 ): Promise<unknown> => {
   if (response && response.status === 401) {
     const isAuthEndpoint =
+      method.url.includes('/auth/sign-in') ||
+      method.url.includes('/auth/sign-up') ||
+      method.url.includes('/auth/refresh-token') ||
       method.url.includes('/api/auth/login') ||
       method.url.includes('/api/auth/refresh');
 
     if (isAuthEndpoint) {
-      toast.error('Something went wrong');
-      handleUnauthorizedLogout();
-      throw new Error('Authentication failed');
+      let errorMessage = 'Invalid credentials';
+      try {
+        const cloned = response.clone();
+        const errorData = await cloned.json();
+        if (errorData?.message) {
+          errorMessage =
+            typeof errorData.message === 'string'
+              ? errorData.message
+              : errorData.message[0] || 'Invalid credentials';
+        }
+      } catch {
+        // Body is not JSON
+      }
+      toast.error(errorMessage);
+      throw new Error(errorMessage);
     }
 
     const refreshToken = tokenService.getRefreshToken();
@@ -58,23 +73,23 @@ export const authResponseInterceptor = async (
       isRefreshing = true;
 
       try {
-        let data: { authToken?: string; refreshToken?: string };
+        let data: { accessToken?: string; authToken?: string; refreshToken?: string };
 
         if (isMockEnabled()) {
           const timestamp = Date.now();
           data = {
-            authToken: `mock_jwt_access_${timestamp}_${Math.random().toString(36).substring(2, 9)}`,
+            accessToken: `mock_jwt_access_${timestamp}_${Math.random().toString(36).substring(2, 9)}`,
             refreshToken: `mock_jwt_refresh_${timestamp}_${Math.random().toString(36).substring(2, 9)}`,
           };
         } else {
           const apiBase = process.env.NEXT_PUBLIC_API_URL || '';
-          const refreshUrl = `${apiBase}/api/auth/refresh`;
+          const refreshUrl = `${apiBase}/auth/refresh-token`;
           const refreshResponse = await fetch(refreshUrl, {
-            method: 'POST',
+            method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${refreshToken}`,
             },
-            body: JSON.stringify({ refreshToken }),
           });
 
           if (!refreshResponse.ok) {
@@ -84,12 +99,13 @@ export const authResponseInterceptor = async (
           data = await refreshResponse.json();
         }
 
-        if (data && data.authToken) {
+        const newAccessToken = data?.accessToken || data?.authToken;
+        if (data && newAccessToken) {
           tokenService.setTokens({
-            authToken: data.authToken,
+            accessToken: newAccessToken,
             refreshToken: data.refreshToken || refreshToken,
           });
-          onRefreshed(data.authToken);
+          onRefreshed(newAccessToken);
           return await method.send();
         } else {
           throw new Error('Invalid refresh response');

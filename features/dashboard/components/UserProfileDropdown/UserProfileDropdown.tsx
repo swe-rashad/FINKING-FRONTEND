@@ -3,9 +3,8 @@ import { useRouter } from 'next/router';
 import { useTranslations } from 'next-intl';
 import { useClickOutside, useEscapeKey } from '@/shared/hooks';
 import { UserIcon, ChevronDownIcon, LogoutIcon } from '@/shared/components/icons';
-import { tokenService } from '@/core/auth/token.service';
-import { authApi } from '@/features/auth/api/auth.api';
-import type { UserProfile } from '@/features/auth/interfaces/auth.interface';
+import { useAppDispatch, useAppSelector } from '@/core/store';
+import { fetchCurrentUser, logout } from '@/features/auth';
 
 interface UserProfileDropdownProps {
   name?: string;
@@ -18,40 +17,32 @@ export default function UserProfileDropdown({
 }: UserProfileDropdownProps) {
   const t = useTranslations('dashboard');
   const [open, setOpen] = useState(false);
-  const [profile, setProfile] = useState<UserProfile | null>(null);
   const ref = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  const dispatch = useAppDispatch();
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
 
   const close = useCallback(() => setOpen(false), []);
 
   useEffect(() => {
-    let cancelled = false;
+    if (!currentUser) {
+      dispatch(fetchCurrentUser());
+    }
+  }, [currentUser, dispatch]);
 
-    authApi
-      .getProfile()
-      .send()
-      .then((res) => {
-        if (!cancelled && res?.name) {
-          setProfile(res);
-        }
-      })
-      .catch(() => {});
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const displayName = name ?? profile?.name ?? t('layout.userProfile.defaultName');
+  const computedName = currentUser
+    ? `${currentUser.name} ${currentUser.lastname}`.trim()
+    : null;
+  const displayName = name ?? computedName ?? t('layout.userProfile.defaultName');
   const displayCompany =
-    company ?? profile?.company ?? t('layout.userProfile.defaultCompany');
+    company ?? (currentUser ? currentUser.email : t('layout.userProfile.defaultCompany'));
 
   useClickOutside(ref, close);
   useEscapeKey(close, open);
 
   function handleLogout() {
     close();
-    tokenService.clearTokens();
+    dispatch(logout());
     router.replace('/auth/login');
   }
 

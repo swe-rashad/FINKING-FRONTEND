@@ -58,7 +58,7 @@ export default function TransactionsPage() {
   );
 
   const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
-    await transactionsApi.exportTransactions(format, email).send();
+    await transactionsApi.exportTransactions({ format, email, ...filters }).send();
     showToast({
       type: 'success',
       title: t('exportModal.title'),

@@ -3,14 +3,24 @@
     "title": "Login",
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
-    "submit": "Submit",
+    "submit": "Login",
     "emailRequired": "Please enter your email address",
-    "submitError": "Failed to sign in"
+    "signUpLink": "Don't have an account?",
+    "signUpAction": "Sign up"
   },
-  "register": {
+  "signup": {
     "title": "Create account",
+    "firstNamePlaceholder": "First name",
+    "firstNameLabel": "First name",
+    "lastNamePlaceholder": "Last name",
+    "lastNameLabel": "Last name",
     "emailPlaceholder": "Email",
     "passwordPlaceholder": "Password",
-    "submit": "Create account"
+    "submit": "Create account",
+    "loginLink": "Already have an account?",
+    "loginAction": "Login",
+    "firstNameRequired": "Please enter your first name",
+    "emailRequired": "Please enter your email address",
+    "passwordRequired": "Please enter a password"
   }
 }

@@ -1,21 +1,17 @@
 import { alovaInstance } from '@/core/api/alova';
 import type {
-  UserItem,
+  BackendUser,
+  CurrentUserResponse,
   PaginatedResponse,
   CreateUserDto,
   UpdateUserDto,
   UsersFilters,
+  PaginationDto,
 } from '../interfaces/user.interface';
 
-export interface UserExportResponse {
-  data: string;
-  filename: string;
-  total: number;
-}
-
 export const usersApi = {
-  getUsers(page = 1, limit = 10, filters?: Partial<UsersFilters>) {
-    return alovaInstance.Get<PaginatedResponse<UserItem>>('/api/users', {
+  getUsers(page = 1, limit = 10, filters?: Partial<UsersFilters & PaginationDto>) {
+    return alovaInstance.Get<PaginatedResponse<BackendUser>>('/users', {
       params: {
         page,
         limit,
@@ -27,21 +23,27 @@ export const usersApi = {
     });
   },
 
+  getUserById(id: number) {
+    return alovaInstance.Get<BackendUser>(`/users/${id}`);
+  },
+
   createUser(data: CreateUserDto) {
-    return alovaInstance.Post<UserItem>('/api/users', data);
+    return alovaInstance.Post<BackendUser>('/users/create', data);
   },
 
   updateUser(id: number, data: UpdateUserDto) {
-    return alovaInstance.Put<UserItem>(`/api/users/${id}`, data);
+    return alovaInstance.Patch<BackendUser>(`/users/${id}`, data);
+  },
+
+  blockUser(id: number) {
+    return alovaInstance.Patch<BackendUser>(`/users/${id}/block`);
   },
 
   deleteUser(id: number) {
-    return alovaInstance.Delete<UserItem>(`/api/users/${id}`);
+    return alovaInstance.Delete<void>(`/users/${id}`);
   },
 
-  exportUsers(format: 'csv' | 'json' = 'csv', email?: string) {
-    return alovaInstance.Get<UserExportResponse>('/api/users/export', {
-      params: { format, email },
-    });
+  getCurrentUser() {
+    return alovaInstance.Get<CurrentUserResponse>('/users/current');
   },
 };

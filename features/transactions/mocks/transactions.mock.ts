@@ -194,6 +194,48 @@ export const transactionsMock = defineMock({
     };
   },
 
+  '[POST]/transactions/export': () => {
+    return {
+      data: JSON.stringify(mockTransactionsData, null, 2),
+      filename: 'transactions-export.json',
+      total: mockTransactionsData.length,
+    };
+  },
+
+  '[POST]/api/transactions/export': () => {
+    return {
+      data: JSON.stringify(mockTransactionsData, null, 2),
+      filename: 'transactions-export.json',
+      total: mockTransactionsData.length,
+    };
+  },
+
+  '[GET]/transactions/{id}': ({ params }) => {
+    const txn =
+      mockTransactionsData.find((t) => t.id === params.id) ||
+      mockTransactionsData[0];
+
+    return {
+      ...txn,
+      currency: 'EUR',
+      merchantName: `${txn.receiver} (topup)`,
+      amount: txn.amount.replace(/[^0-9.]/g, '') || '20.00',
+      operationType: 'Purchase',
+      statusDescription: 'Payment approved',
+      cardMasked: '523915******8748',
+      rrn: '602912253898',
+      operationId: '260129022658452734',
+      merchantId: '1201563',
+      orderId: '56738073',
+      subMerchantId: '202006593',
+      mcc: '6012',
+      terminalId: 'POST6593',
+      reversal: 'YES',
+      terminalSerialId: 'V1E03307',
+      threeDSecure: 'NO',
+    };
+  },
+
   '[GET]/api/transactions/{id}': ({ params }) => {
     const txn =
       mockTransactionsData.find((t) => t.id === params.id) ||
@@ -221,6 +263,52 @@ export const transactionsMock = defineMock({
   },
 
   '[GET]/api/transactions': ({ query }) => {
+    let filtered = [...mockTransactionsData];
+
+    if (query.sender) {
+      const sender = String(query.sender).toLowerCase();
+      filtered = filtered.filter((t) => t.sender.toLowerCase().includes(sender));
+    }
+
+    if (query.receiver) {
+      const receiver = String(query.receiver).toLowerCase();
+      filtered = filtered.filter((t) => t.receiver.toLowerCase().includes(receiver));
+    }
+
+    if (query.status && query.status !== 'all') {
+      const status = String(query.status).toLowerCase();
+      filtered = filtered.filter((t) => t.status.toLowerCase() === status);
+    }
+
+    if (query.type && query.type !== 'all') {
+      const type = String(query.type).toLowerCase();
+      filtered = filtered.filter((t) => t.type.toLowerCase() === type);
+    }
+
+    if (query.minAmount) {
+      const min = parseFloat(String(query.minAmount));
+      if (!isNaN(min)) {
+        filtered = filtered.filter((t) => {
+          const num = parseFloat(t.amount.replace(/[^0-9.]/g, '')) || 0;
+          return num >= min;
+        });
+      }
+    }
+
+    if (query.maxAmount) {
+      const max = parseFloat(String(query.maxAmount));
+      if (!isNaN(max)) {
+        filtered = filtered.filter((t) => {
+          const num = parseFloat(t.amount.replace(/[^0-9.]/g, '')) || 0;
+          return num <= max;
+        });
+      }
+    }
+
+    return paginateMock(filtered, query);
+  },
+
+  '[GET]/transactions': ({ query }) => {
     let filtered = [...mockTransactionsData];
 
     if (query.sender) {

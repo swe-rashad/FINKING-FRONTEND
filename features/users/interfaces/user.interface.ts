@@ -1,19 +1,35 @@
-export type UserRole = 'Customer' | 'Employee';
-export type UserStatus = 'Active' | 'Blocked';
+import type { UserStatusEnumType, UserRolesEnumType } from '../types/user.type';
 
-export interface UserItem {
+export interface BackendUser {
   id: number;
-  no: number;
-  username: string;
-  firstName: string;
-  lastName: string;
+  createdAt: string | Date;
+  updatedAt: string | Date;
   email: string;
-  role: UserRole;
-  status: UserStatus;
+  name: string;
+  lastname: string;
+  verificated: boolean;
+  status: UserStatusEnumType;
+  role: UserRolesEnumType;
 }
 
-export type CreateUserDto = Omit<UserItem, 'id' | 'no'>;
+export type CurrentUserResponse = BackendUser;
+
+export interface CreateUserDto {
+  email: string;
+  password?: string;
+  name?: string;
+  lastname?: string;
+  verificated?: boolean;
+  status?: UserStatusEnumType;
+  role?: UserRolesEnumType;
+}
+
 export type UpdateUserDto = Partial<CreateUserDto>;
+
+export interface PaginationDto {
+  page?: number;
+  limit?: number;
+}
 
 export interface PaginatedResponse<T> {
   data: T[];

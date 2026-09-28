@@ -14,7 +14,7 @@ import {
   applyFilters,
   clearFilters,
 } from '../store/users.slice';
-import type { CreateUserDto, UpdateUserDto, UserItem, UsersFilters } from '../interfaces/user.interface';
+import type { CreateUserDto, UpdateUserDto, BackendUser, UsersFilters } from '../interfaces/user.interface';
 
 export function useUsers() {
   const dispatch = useAppDispatch();
@@ -29,7 +29,7 @@ export function useUsers() {
     setPage: (page: number) => dispatch(fetchUsers(page)),
     openCreateModal: () => dispatch(openCreateModal()),
     closeCreateModal: () => dispatch(closeCreateModal()),
-    openEditModal: (user: UserItem) => dispatch(openEditModal(user)),
+    openEditModal: (user: BackendUser) => dispatch(openEditModal(user)),
     closeEditModal: () => dispatch(closeEditModal()),
     openFilterModal: () => dispatch(openFilterModal()),
     closeFilterModal: () => dispatch(closeFilterModal()),

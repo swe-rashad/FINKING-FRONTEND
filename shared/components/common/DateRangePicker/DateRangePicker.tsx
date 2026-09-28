@@ -42,6 +42,7 @@ export function DateRangePicker({
   endDate,
   onChange,
   className = '',
+  maxDays = 365,
 }: DateRangePickerProps) {
   const t = useTranslations('shared');
   const locale = useLocale();
@@ -130,10 +131,16 @@ export function DateRangePicker({
     setMonth(parseISODate(range.start));
   };
 
-  const canApply = Boolean(draft?.from && draft?.to);
+  const isExceedingMaxRange = Boolean(
+    draft?.from &&
+    draft?.to &&
+    (draft.to.getTime() - draft.from.getTime()) > maxDays * 24 * 60 * 60 * 1000
+  );
+
+  const canApply = Boolean(draft?.from && draft?.to && !isExceedingMaxRange);
 
   const handleApply = () => {
-    if (!draft?.from || !draft?.to) return;
+    if (!draft?.from || !draft?.to || isExceedingMaxRange) return;
     onChange({ start: toISODate(draft.from), end: toISODate(draft.to) });
     close();
   };
@@ -190,6 +197,7 @@ export function DateRangePicker({
                 mode="range"
                 selected={draft}
                 onSelect={setDraft}
+                max={maxDays}
                 month={month}
                 onMonthChange={setMonth}
                 numberOfMonths={numberOfMonths}
@@ -205,7 +213,14 @@ export function DateRangePicker({
             </div>
 
             <div className="flex flex-col gap-3 border-t border-gray-100 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-              <p className="text-sm font-medium text-gray-700">{draftSummary}</p>
+              <div>
+                <p className="text-sm font-medium text-gray-700">{draftSummary}</p>
+                {isExceedingMaxRange && (
+                  <p className="text-xs text-rose-500 font-medium mt-0.5">
+                    Range cannot exceed 1 year ({maxDays} days)
+                  </p>
+                )}
+              </div>
               <div className="flex items-center justify-end gap-2">
                 <Button variant="outline" size="sm" onClick={close}>
                   {t('dateRange.cancel')}

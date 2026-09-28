@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import type {
-  UserItem,
+  BackendUser,
   CreateUserDto,
   UpdateUserDto,
   UsersFilters,
@@ -8,7 +8,7 @@ import type {
 import { usersApi } from '../api/users.api';
 
 export interface UsersState {
-  users: UserItem[];
+  users: BackendUser[];
   totalCount: number;
   currentPage: number;
   totalPages: number;
@@ -17,7 +17,7 @@ export interface UsersState {
   isCreateModalOpen: boolean;
   isEditModalOpen: boolean;
   isFilterModalOpen: boolean;
-  activeUser: UserItem | null;
+  activeUser: BackendUser | null;
   filters: UsersFilters;
 }
 
@@ -110,7 +110,7 @@ export const usersSlice = createSlice({
     closeCreateModal(state) {
       state.isCreateModalOpen = false;
     },
-    openEditModal(state, action: PayloadAction<UserItem>) {
+    openEditModal(state, action: PayloadAction<BackendUser>) {
       state.activeUser = action.payload;
       state.isEditModalOpen = true;
     },

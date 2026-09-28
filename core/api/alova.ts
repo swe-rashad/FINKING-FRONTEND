@@ -5,6 +5,7 @@ import { usersMock } from '@/features/users/mocks/users.mock';
 import { transactionsMock } from '@/features/transactions/mocks/transactions.mock';
 import { statisticsMock } from '@/features/statistics/mocks/statistics.mock';
 import { authMock } from '@/features/auth/mocks/auth.mock';
+import { merchantsMock } from '@/features/merchants/mocks/merchants.mock';
 import {
   authRequestInterceptor,
   authResponseInterceptor,
@@ -49,7 +50,7 @@ if (typeof window !== 'undefined') {
 const fetchAdapter = adapterFetch();
 
 const mockAdapter = createAlovaMockAdapter(
-  [authMock, usersMock, transactionsMock, statisticsMock],
+  [authMock, usersMock, transactionsMock, statisticsMock, merchantsMock],
   {
     delay: 80,
     httpAdapter: fetchAdapter,

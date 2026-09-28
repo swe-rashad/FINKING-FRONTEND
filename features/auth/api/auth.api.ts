@@ -1,23 +1,22 @@
 import { alovaInstance } from '@/core/api/alova';
-import type {
-  LoginCredentials,
-  AuthResponse,
-  AuthTokens,
-  UserProfile,
-} from '../interfaces/auth.interface';
+import type { LoginCredentials, SignUpCredentials, AuthResponse, AuthTokens } from '../interfaces/auth.interface';
 
 export const authApi = {
-  login(credentials: LoginCredentials) {
-    return alovaInstance.Post<AuthResponse>('/api/auth/login', credentials);
+  signIn(credentials: LoginCredentials) {
+    return alovaInstance.Post<AuthResponse>('/auth/sign-in', credentials);
+  },
+
+  signUp(credentials: SignUpCredentials) {
+    return alovaInstance.Post<AuthResponse>('/auth/sign-up', credentials);
   },
 
   refreshToken(refreshToken: string) {
-    return alovaInstance.Post<AuthTokens>('/api/auth/refresh', {
-      refreshToken,
+    return alovaInstance.Get<AuthTokens>('/auth/refresh-token', {
+      headers: { Authorization: `Bearer ${refreshToken}` },
     });
   },
 
-  getProfile() {
-    return alovaInstance.Get<UserProfile>('/api/auth/profile');
+  logout() {
+    return alovaInstance.Post<{ message: string }>('/auth/logout');
   },
 };

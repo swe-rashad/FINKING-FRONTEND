@@ -1,17 +1,9 @@
 import { alovaInstance } from '@/core/api/alova';
 import type {
-  TransactionItem,
   TransactionDetailsItem,
   TransactionsFilters,
+  PaginatedTransactionsResponse,
 } from '../interfaces/transaction.interface';
-
-export interface PaginatedTransactionsResponse {
-  data: TransactionItem[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
-}
 
 export interface TransactionExportResponse {
   data: string;
@@ -20,28 +12,42 @@ export interface TransactionExportResponse {
 }
 
 export const transactionsApi = {
-  getTransactions(page = 1, limit = 10, filters?: Partial<TransactionsFilters>) {
-    return alovaInstance.Get<PaginatedTransactionsResponse>('/api/transactions', {
-      params: {
-        page,
-        limit,
-        ...(filters?.status && filters.status !== 'all' ? { status: filters.status } : {}),
-        ...(filters?.type && filters.type !== 'all' ? { type: filters.type } : {}),
-        ...(filters?.sender ? { sender: filters.sender } : {}),
-        ...(filters?.receiver ? { receiver: filters.receiver } : {}),
-        ...(filters?.minAmount ? { minAmount: filters.minAmount } : {}),
-        ...(filters?.maxAmount ? { maxAmount: filters.maxAmount } : {}),
-      },
+  getTransactions(
+    page = 1,
+    limit = 10,
+    filters?: Partial<TransactionsFilters>
+  ) {
+    const params: Record<string, string | number> = {
+      page,
+      limit,
+    };
+
+    if (filters?.sender) params.sender = filters.sender;
+    if (filters?.receiver) params.receiver = filters.receiver;
+    if (filters?.merchantName) params.merchantName = filters.merchantName;
+    if (filters?.currency) params.currency = filters.currency;
+    if (filters?.dateFrom) params.dateFrom = filters.dateFrom;
+    if (filters?.dateTo) params.dateTo = filters.dateTo;
+
+    if (filters?.status && (filters.status as string) !== 'all') {
+      params.status = String(filters.status).toLowerCase();
+    }
+    if (filters?.type && (filters.type as string) !== 'all') {
+      params.type = String(filters.type).toLowerCase();
+    }
+    if (filters?.minAmount) params.minAmount = filters.minAmount;
+    if (filters?.maxAmount) params.maxAmount = filters.maxAmount;
+
+    return alovaInstance.Get<PaginatedTransactionsResponse>('/transactions', {
+      params,
     });
   },
 
-  getTransactionById(id: string) {
-    return alovaInstance.Get<TransactionDetailsItem>(`/api/transactions/${id}`);
+  getTransactionById(id: string | number) {
+    return alovaInstance.Get<TransactionDetailsItem>(`/transactions/${id}`);
   },
 
-  exportTransactions(format: 'csv' | 'json' = 'csv', email?: string) {
-    return alovaInstance.Get<TransactionExportResponse>('/api/transactions/export', {
-      params: { format, email },
-    });
+  exportTransactions(payload?: Record<string, unknown>) {
+    return alovaInstance.Post<TransactionExportResponse>('/transactions/export', payload || {});
   },
 };
