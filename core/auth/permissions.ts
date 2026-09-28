@@ -14,8 +14,6 @@ export type PermissionAction =
   | 'users:block'
   | 'transactions:read'
   | 'transactions:export'
-  | 'statistics:read'
-  | 'statistics:export'
   | 'merchant:read'
   | 'merchant:update';
 
@@ -28,6 +26,10 @@ export function canAccess(
 
   const role = String(user.role);
   if (role === UserRole.ADMIN) return true;
+
+  if (action === 'statistics:read' || action === 'statistics:export') {
+    return false;
+  }
 
   const permissions = user.permissions;
 
@@ -47,9 +49,6 @@ export function canAccess(
       return role === UserRole.EMPLOYEE || role === UserRole.CUSTOMER;
     case 'transactions:export':
       return false;
-    case 'statistics:read':
-    case 'statistics:export':
-      return false;
     case 'merchant:read':
     case 'merchant:update':
       return role === UserRole.EMPLOYEE;
@@ -65,12 +64,14 @@ export function hasPathAccess(
   if (!user) return true;
   if (user.status === 'blocked') return false;
 
-  if (path.includes('/dashboard/users')) {
-    return canAccess(user, 'users:read');
-  }
+  const role = String(user.role);
 
   if (path.includes('/dashboard/statistics')) {
-    return canAccess(user, 'statistics:read');
+    return role === UserRole.ADMIN;
+  }
+
+  if (path.includes('/dashboard/users')) {
+    return canAccess(user, 'users:read');
   }
 
   if (path.includes('/dashboard/transactions')) {
