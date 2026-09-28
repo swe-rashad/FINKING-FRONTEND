@@ -9,6 +9,8 @@ import TransactionsIcon from '@/features/dashboard/components/icons/Transactions
 import StatisticsIcon from '@/features/dashboard/components/icons/StatisticsIcon';
 import SidebarArrowIcon from '@/features/dashboard/components/icons/SidebarArrowIcon';
 import { CloseIcon } from '@/shared/components/icons';
+import { useAppSelector } from '@/core/store';
+import { hasPermission } from '@/core/auth/permissions';
 
 interface SidebarProps {
   collapsed: boolean;
@@ -43,7 +45,12 @@ export default function Sidebar({
 }: SidebarProps) {
   const t = useTranslations('dashboard');
   const router = useRouter();
+  const currentUser = useAppSelector((state) => state.auth.currentUser);
   const compact = collapsed && !mobileOpen;
+
+  const visibleNavItems = NAV_ITEMS.filter(({ href }) =>
+    hasPermission(currentUser, href)
+  );
 
   const toggleTitle = compact
     ? t('layout.sidebar.expand')
@@ -115,7 +122,7 @@ export default function Sidebar({
             </span>
           )}
           <nav aria-label={t('layout.sidebar.navigation')} className="flex flex-col gap-1">
-            {NAV_ITEMS.map(({ href, labelKey, icon: Icon }) => {
+            {visibleNavItems.map(({ href, labelKey, icon: Icon }) => {
               const text = t(labelKey);
               const active =
                 router.pathname === href ||

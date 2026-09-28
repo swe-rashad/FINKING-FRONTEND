@@ -10,6 +10,7 @@ export interface BackendUser {
   verificated: boolean;
   status: UserStatusEnumType;
   role: UserRolesEnumType;
+  permissions?: string[] | null;
 }
 
 export type CurrentUserResponse = BackendUser;
