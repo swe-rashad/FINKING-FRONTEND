@@ -29,8 +29,11 @@ export function canAccess(
   const role = String(user.role);
   if (role === UserRole.ADMIN) return true;
 
-  const permissions = user.permissions || [];
-  if (permissions.includes(action as PermissionAction)) return true;
+  const permissions = user.permissions;
+
+  if (Array.isArray(permissions)) {
+    return permissions.includes(action as PermissionAction);
+  }
 
   switch (action) {
     case 'users:read':
