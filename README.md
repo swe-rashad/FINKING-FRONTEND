@@ -9,26 +9,26 @@
 ![next-intl](https://img.shields.io/badge/next--intl-Latest-000000?style=for-the-badge)
 ![Oxlint + ESLint](https://img.shields.io/badge/Linter-Oxlint_%2B_ESLint-4B32C3?style=for-the-badge)
 
-High-performance, enterprise-grade financial operations dashboard built with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, **Tailwind CSS v4**, and **next-intl**.
+A web dashboard for managing financial operations, transactions, and users. Built with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, and **Tailwind CSS v4**.
 
-This repository serves as the official frontend application for the [FinKing Financial Operations Engine (FINKING-BACKEND)](https://github.com/swe-rashad/FINKING-BACKEDN).
-
----
-
-## 🚀 Key Features & Service Integrations
-
-- **📊 Statistics & Analytics Engine**: Real-time KPI summaries (Total Revenue, Transactions Count, Active Users, Avg Amount), monthly revenue charts, and category distribution breakdown. Integrated with `POST /statistics/export` for async BullMQ queue exports.
-- **💸 Transaction Management**: Paginated transaction ledger, granular filtering (sender, receiver, merchant, status, type, date range, min/max amount), detailed transaction view, and PDF/CSV export via `POST /transactions/export`.
-- **👥 User Administration**: Advanced user directory, role-based controls (Admin, Employee, Customer), status management, profile editing via `PATCH /users/:id`, and user block toggling via `PATCH /users/:id/block`.
-- **🏢 Merchant Portal**: Merchant account profile retrieval (`GET /merchants/current`) and profile updating (`PATCH /merchants/current`).
-- **🔐 JWT Authentication & Security**: Complete authentication lifecycle with `POST /auth/sign-in`, `POST /auth/sign-up`, `GET /auth/refresh-token` (JTI rotation with Redis blacklisting), and `POST /auth/logout`. Route protection handled via `AuthGuard` & `GuestGuard`.
-- **⚡ Dual Mode Runtime (Mock & Live)**: Integrated `@alova/mock` adapter allows instant standalone development without a backend, with seamless runtime toggling to live backend APIs (`NEXT_PUBLIC_API_URL`).
+This frontend connects to the [FinKing Backend API](https://github.com/swe-rashad/FINKING-BACKEDN) and supports role-based access control, analytics charts, transaction filters, and automated report exports via email.
 
 ---
 
-## 🏗️ Architecture & Feature-Sliced Design (FSD)
+## 🚀 Main Features
 
-The application follows strict **Feature-Sliced Design (FSD)** principles. `pages/` functions purely as a thin routing layer, while domain-specific logic, UI components, Redux slices, Alova API endpoints, and mock handlers reside isolated inside `features/<domain>`.
+- **📊 Statistics & Analytics**: Dashboard with key metrics (Total Revenue, Transaction Count, Active Users, Average Amount), monthly revenue charts, and category breakdown. Includes asynchronous Excel report exports via email.
+- **💸 Transaction Management**: Paginated transaction table with filters for status, type, date range, currency, sender, and receiver. Supports single transaction details and background Excel exports.
+- **👥 User Management**: User directory with role filtering (Admin, Employee, Customer), user editing, creation, and one-click account blocking/unblocking with instant UI updates.
+- **🏢 Merchant Profile**: View and update current merchant account settings.
+- **🔐 Authentication & Access Control**: Full JWT auth flow (sign-in, sign-up, token refresh, and logout). The sidebar, page routes, and action buttons automatically adapt to the user's role and assigned permissions.
+- **⚡ Dual Mode (Mock & Live)**: Includes a built-in mock adapter (`@alova/mock`) for frontend-only development, which can easily be switched to the live backend API.
+
+---
+
+## 🏗️ Project Architecture
+
+The project is organized using **Feature-Sliced Design (FSD)**. The `pages/` directory only handles routing, while business logic, UI components, Redux slices, and API calls are grouped inside their respective feature folders under `features/`.
 
 ```mermaid
 flowchart TB
