@@ -82,10 +82,10 @@ core/
   i18n/                Internationalization message preloading
   store/               Redux Toolkit root store & feature slice registration
 shared/
-  components/          Atomic UI components (Buttons, Inputs, Modals, Toast)
-  guards/              AuthGuard & GuestGuard HOCs
+  components/          Reusable UI components (Buttons, Inputs, Modals, Toast)
+  guards/              AuthGuard & GuestGuard route wrappers
   hooks/               Utility hooks (click-outside, escape key, body lock)
-  interceptors/        JWT Bearer header injection & 401 silent token refresh
+  interceptors/        Token injection and automatic refresh interceptors
 ```
 
 ---
@@ -120,15 +120,15 @@ shared/
 
 ---
 
-## Technology Stack Detail
+## Technology Stack
 
-- **Next.js 16 (Pages Router)**: Modern React SSR/SSG web framework with fast page loads and localized static prop resolution.
-- **React 19**: Concurrent renderer with enhanced hooks.
-- **Redux Toolkit**: Predictable global state management for feature domains (`useUsers`, `useTransactions`, `useStatistics`).
-- **Alova 3**: Lightweight HTTP request strategy library with built-in mock adapter, request deduplication, and automated token retry interceptors.
-- **Tailwind CSS v4**: Utility-first styling engine with customized `@theme` design tokens and responsive glassmorphism themes.
-- **next-intl**: Flexible internationalization framework supporting multi-language locale switching.
-- **Oxlint & ESLint**: Dual linting pipeline for ultra-fast Rust-powered lint checks and strict code style enforcement.
+- **Next.js 16 (Pages Router)**: React framework for page routing and server-side rendering.
+- **React 19**: Frontend UI library.
+- **Redux Toolkit**: Global state management for user data, transactions, and UI states.
+- **Alova 3**: HTTP client for API requests with mock support and automatic token refresh.
+- **Tailwind CSS v4**: Utility-first CSS framework for interface styling and responsive design.
+- **next-intl**: Internationalization library for multi-language support (English, Azerbaijani).
+- **Oxlint & ESLint**: Linting setup for code quality and style consistency.
 
 ---
 
