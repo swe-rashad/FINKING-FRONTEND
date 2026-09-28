@@ -63,8 +63,19 @@ export const createUser = createAsyncThunk(
 export const updateUser = createAsyncThunk(
   'users/updateUser',
   async ({ id, data }: { id: number; data: UpdateUserDto }, { dispatch, getState }) => {
+    dispatch(updateUserLocal({ id, data }));
     await usersApi.updateUser(id, data).send();
     dispatch(closeEditModal());
+    const state = getState() as { users: UsersState };
+    dispatch(fetchUsers(state.users.currentPage));
+  }
+);
+
+export const blockUser = createAsyncThunk(
+  'users/blockUser',
+  async (id: number, { dispatch, getState }) => {
+    dispatch(toggleUserStatusLocal(id));
+    await usersApi.blockUser(id).send();
     const state = getState() as { users: UsersState };
     dispatch(fetchUsers(state.users.currentPage));
   }
@@ -130,6 +141,18 @@ export const usersSlice = createSlice({
     resetFilters(state) {
       state.filters = defaultFilters;
     },
+    toggleUserStatusLocal(state, action: PayloadAction<number>) {
+      const user = state.users.find((u) => u.id === action.payload);
+      if (user) {
+        user.status = user.status === 'blocked' ? 'active' : 'blocked';
+      }
+    },
+    updateUserLocal(state, action: PayloadAction<{ id: number; data: UpdateUserDto }>) {
+      const index = state.users.findIndex((u) => u.id === action.payload.id);
+      if (index !== -1) {
+        state.users[index] = { ...state.users[index], ...action.payload.data };
+      }
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -159,6 +182,8 @@ export const {
   closeFilterModal,
   setFilters,
   resetFilters,
+  toggleUserStatusLocal,
+  updateUserLocal,
 } = usersSlice.actions;
 
 export default usersSlice.reducer;

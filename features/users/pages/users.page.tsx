@@ -46,6 +46,7 @@ export default function UsersPage() {
     closeEditModal,
     createUser,
     updateUser,
+    blockUser,
   } = useUsers();
 
   const hasActiveFilters = Boolean(
@@ -98,9 +99,15 @@ export default function UsersPage() {
       render: (item) => {
         const isActive = item.status === 'active';
         return (
-          <span
-            className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium ${
-              isActive ? 'bg-[#E8F8EE] text-[#12B76A]' : 'bg-[#FEF3F2] text-[#F04438]'
+          <button
+            type="button"
+            onClick={async (e) => {
+              e.stopPropagation();
+              await blockUser(item.id);
+            }}
+            title="Click to toggle user status"
+            className={`inline-flex cursor-pointer items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium transition-transform active:scale-95 ${
+              isActive ? 'bg-[#E8F8EE] text-[#12B76A] hover:bg-emerald-100' : 'bg-[#FEF3F2] text-[#F04438] hover:bg-red-100'
             }`}
           >
             {isActive ? (
@@ -109,7 +116,7 @@ export default function UsersPage() {
               <DeclinedIcon size={14} className="text-[#F04438]" />
             )}
             <span>{isActive ? t('users.status.active') : t('users.status.blocked')}</span>
-          </span>
+          </button>
         );
       },
     },

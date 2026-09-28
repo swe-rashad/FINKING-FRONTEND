@@ -4,6 +4,7 @@ import {
   fetchUsers,
   createUser,
   updateUser,
+  blockUser,
   deleteUser,
   openCreateModal,
   closeCreateModal,
@@ -37,6 +38,7 @@ export function useUsers() {
     clearFilters: () => dispatch(clearFilters()),
     createUser: (data: CreateUserDto) => dispatch(createUser(data)).unwrap(),
     updateUser: (id: number, data: UpdateUserDto) => dispatch(updateUser({ id, data })).unwrap(),
+    blockUser: (id: number) => dispatch(blockUser(id)).unwrap(),
     deleteUser: (id: number) => dispatch(deleteUser(id)).unwrap(),
   };
 }
