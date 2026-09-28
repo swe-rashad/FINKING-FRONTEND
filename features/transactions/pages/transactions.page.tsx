@@ -60,7 +60,29 @@ export default function TransactionsPage() {
   );
 
   const handleExportSubmit = async (email: string, format: 'csv' | 'json') => {
-    await transactionsApi.exportTransactions({ format, email, ...filters }).send();
+    const payload: Record<string, unknown> = {
+      email,
+      format,
+    };
+    if (filters.sender) payload.sender = filters.sender;
+    if (filters.receiver) payload.receiver = filters.receiver;
+    if (filters.merchantName) payload.merchantName = filters.merchantName;
+    if (filters.currency) payload.currency = String(filters.currency).toLowerCase();
+    if (filters.dateFrom) payload.dateFrom = filters.dateFrom;
+    if (filters.dateTo) payload.dateTo = filters.dateTo;
+
+    if (filters.status && filters.status !== 'all') {
+      payload.status = String(filters.status).toLowerCase();
+    }
+
+    if (filters.type && filters.type !== 'all') {
+      const rawType = String(filters.type).toLowerCase().replace(/[^a-z]/g, '');
+      if (rawType === 'topup' || rawType === 'payment' || rawType === 'transfer') {
+        payload.type = rawType;
+      }
+    }
+
+    await transactionsApi.exportTransactions(payload).send();
     showToast({
       type: 'success',
       title: t('exportModal.title'),

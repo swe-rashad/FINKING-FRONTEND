@@ -4,7 +4,13 @@ import { useTranslations } from 'next-intl';
 import { loadMessages } from '@/core/i18n/loader';
 import { defaultLocale } from '@/core/i18n/config';
 import { DateRangePicker } from '@/shared/components/common/DateRangePicker';
+import { Button } from '@/shared/components/common/Button';
+import { ExportIcon } from '@/shared/components/icons';
+import { ExportModal } from '@/features/dashboard';
+import { useToast } from '@/shared/components/common/Toast';
+import { usePermission } from '@/shared/hooks';
 import { useStatistics } from '../hooks';
+import { statisticsApi } from '../api/statistics.api';
 import {
   StatisticsKpiCards,
   RevenueTrendChart,
@@ -20,8 +26,11 @@ export async function getStaticProps() {
 
 export default function StatisticsPage() {
   const t = useTranslations('dashboard');
+  const { showToast } = useToast();
+  const { canStatisticsExport } = usePermission();
   const [startDate, setStartDate] = useState('2026-01-01');
   const [endDate, setEndDate] = useState('2026-09-30');
+  const [isExportModalOpen, setIsExportModalOpen] = useState(false);
 
   const {
     transactions,
@@ -36,6 +45,15 @@ export default function StatisticsPage() {
 
   const rangePill = getFormattedRangePill(startDate, endDate);
 
+  const handleExportSubmit = async (email: string) => {
+    await statisticsApi.exportStatistics({ startDate, endDate, email }).send();
+    showToast({
+      type: 'success',
+      title: t('exportModal.title'),
+      message: t('exportModal.toastSuccess'),
+    });
+  };
+
   return (
     <>
       <Head>
@@ -43,7 +61,6 @@ export default function StatisticsPage() {
       </Head>
 
       <div className="w-full px-4 sm:px-6 pb-12 flex flex-col">
-        {/* Page Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
           <div className="flex items-center gap-3">
             <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 tracking-tight">
@@ -54,25 +71,35 @@ export default function StatisticsPage() {
             </span>
           </div>
 
-          <DateRangePicker
-            startDate={startDate}
-            endDate={endDate}
-            maxDays={365}
-            onChange={({ start, end }) => {
-              setStartDate(start);
-              setEndDate(end);
-            }}
-          />
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+            <DateRangePicker
+              startDate={startDate}
+              endDate={endDate}
+              maxDays={365}
+              onChange={({ start, end }) => {
+                setStartDate(start);
+                setEndDate(end);
+              }}
+            />
+
+            {canStatisticsExport && (
+              <Button
+                variant="secondary"
+                icon={<ExportIcon size={16} />}
+                onClick={() => setIsExportModalOpen(true)}
+              >
+                {t('statistics.actions.export')}
+              </Button>
+            )}
+          </div>
         </div>
 
-        {/* KPI Cards Grid */}
         <StatisticsKpiCards
           kpi={kpi}
           rangePill={rangePill}
           isLoading={isLoading}
         />
 
-        {/* Charts and Distribution Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
           <RevenueTrendChart
             monthlyRevenue={monthlyRevenue}
@@ -90,12 +117,20 @@ export default function StatisticsPage() {
           />
         </div>
 
-        {/* Real Transactions Table with Empty State */}
         <LastTransactionsTable
           transactions={transactions}
           rangePill={rangePill}
           isLoading={isLoading}
         />
+
+        {isExportModalOpen && (
+          <ExportModal
+            isOpen
+            onClose={() => setIsExportModalOpen(false)}
+            title={t('statistics.title')}
+            onSubmit={handleExportSubmit}
+          />
+        )}
       </div>
     </>
   );
