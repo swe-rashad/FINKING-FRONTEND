@@ -9,9 +9,7 @@
 ![next-intl](https://img.shields.io/badge/next--intl-Latest-000000?style=for-the-badge)
 ![Oxlint + ESLint](https://img.shields.io/badge/Linter-Oxlint_%2B_ESLint-4B32C3?style=for-the-badge)
 
-A web dashboard for managing financial operations, transactions, and users. Built with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, and **Tailwind CSS v4**.
-
-This frontend connects to the [FinKing Backend API](https://github.com/swe-rashad/FINKING-BACKEDN) and supports role-based access control, analytics charts, transaction filters, and automated report exports via email.
+An enterprise-grade financial operations and intelligence dashboard engineered with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, and **Tailwind CSS v4**. Built with Feature-Sliced Design (FSD), it interfaces directly with the [FinKing Backend Engine](https://github.com/swe-rashad/FINKING-BACKEDN) to provide real-time transaction lifecycle controls, granular role/permission workflows, multi-dimensional analytics visualization, and distributed report export triggers.
 
 ![FinKing Dashboard Preview](public/screenshots/dashboard-preview.png)
 
