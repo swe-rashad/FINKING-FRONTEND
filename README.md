@@ -13,6 +13,8 @@ A web dashboard for managing financial operations, transactions, and users. Buil
 
 This frontend connects to the [FinKing Backend API](https://github.com/swe-rashad/FINKING-BACKEDN) and supports role-based access control, analytics charts, transaction filters, and automated report exports via email.
 
+![FinKing Dashboard Preview](public/screenshots/dashboard-preview.png)
+
 ---
 
 ## Main Features
