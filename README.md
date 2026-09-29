@@ -1,4 +1,4 @@
-# FinKing Frontend — Next.js 16 & React 19 Financial Operations Dashboard
+# FinKing Frontend — Merchant Panel Dashboard
 
 ![Next.js 16](https://img.shields.io/badge/Next.js-16.0-black?style=for-the-badge&logo=next.js)
 ![React 19](https://img.shields.io/badge/React-19.0-61DAFB?style=for-the-badge&logo=react)
@@ -9,7 +9,7 @@
 ![next-intl](https://img.shields.io/badge/next--intl-Latest-000000?style=for-the-badge)
 ![Oxlint + ESLint](https://img.shields.io/badge/Linter-Oxlint_%2B_ESLint-4B32C3?style=for-the-badge)
 
-An enterprise-grade financial operations and intelligence dashboard engineered with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, and **Tailwind CSS v4**. Built with Feature-Sliced Design (FSD), it interfaces directly with the [FinKing Backend Engine](https://github.com/swe-rashad/FINKING-BACKEDN) to provide real-time transaction lifecycle controls, granular role/permission workflows, multi-dimensional analytics visualization, and distributed report export triggers.
+An enterprise-grade **Merchant Panel** dashboard engineered with **Next.js 16 (Pages Router)**, **React 19**, **Redux Toolkit**, **Alova 3**, and **Tailwind CSS v4**. Built with Feature-Sliced Design (FSD), it provides merchant administrators and operators with transaction monitoring, real-time revenue analytics, user and role governance, and automated financial report exports.
 
 ![FinKing Dashboard Preview](public/screenshots/dashboard-preview.png)
 
@@ -178,7 +178,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
 ## Related Repositories
 
-- **Backend Application**: [swe-rashad/FINKING-BACKEDN](https://github.com/swe-rashad/FINKING-BACKEDN) — NestJS 11, PostgreSQL, TypeORM, BullMQ Queue Engine, Redis Token Rotation, Swagger API Docs.
+- **Backend Platform**: [swe-rashad/FINKING-BACKEDN](https://github.com/swe-rashad/FINKING-BACKEDN) — Merchant Panel Platform (NestJS 11, PostgreSQL, TypeORM, BullMQ Distributed Queues, Redis Token Rotation).
 
 ---
 
