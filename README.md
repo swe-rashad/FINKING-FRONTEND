@@ -185,7 +185,7 @@ Open http://localhost:3000 in your browser.
 
 ## Related Repositories
 
-* **Backend Platform**: https://github.com/swe-rashad/FINKING-BACKEDN — Merchant Panel Platform (NestJS 11, PostgreSQL, TypeORM, BullMQ Distributed Queues, Redis Token Rotation).
+* **Backend Platform**: https://github.com/swe-rashad/FINKING-BACKEND — Merchant Panel Platform (NestJS 11, PostgreSQL, TypeORM, BullMQ Distributed Queues, Redis Token Rotation).
 
 ---
 
