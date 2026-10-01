@@ -138,7 +138,7 @@ shared/
 
 * Node.js 20+
 * pnpm / npm 10+
-* Running instance of [FINKING-BACKEND](https://github.com/swe-rashad/FINKING-BACKEDN) (Optional if using Mock Mode)
+* Running instance of [FINKING-BACKEND](https://github.com/swe-rashad/FINKING-BACKEND) (Optional if using Mock Mode)
 
 ### 1. Clone & Install
 
