@@ -55,7 +55,7 @@ export const statisticsApi = {
   },
 
   getAverageTransactionAmount(params?: GetStatisticsDto) {
-    return alovaInstance.Get<AverageTransactionAmountResponse>('/statistics/avarage-transaction-amount', {
+    return alovaInstance.Get<AverageTransactionAmountResponse>('/statistics/average-transaction-amount', {
       params: serializeParams(params),
     });
   },

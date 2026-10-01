@@ -102,7 +102,7 @@ shared/
 | **Statistics**   | `/statistics/category-distribution`      | `GET`       | StatisticsController.getCategoryDistribution       |
 | **Statistics**   | `/statistics/total-revenue`              | `GET`       | StatisticsController.getTotalRevenue               |
 | **Statistics**   | `/statistics/total-transactions`         | `GET`       | StatisticsController.getTotalTransactions          |
-| **Statistics**   | `/statistics/avarage-transaction-amount` | `GET`       | StatisticsController.getAvarageTransactionAmount   |
+| **Statistics**   | `/statistics/average-transaction-amount` | `GET`       | StatisticsController.getAverageTransactionAmount   |
 | **Statistics**   | `/statistics/active-users`               | `GET`       | StatisticsController.getActiveUsers                |
 | **Statistics**   | `/statistics/get-last-transactions`      | `GET`       | StatisticsController.getLastTransactions           |
 | **Statistics**   | `/statistics/export`                     | `POST`      | StatisticsController.exportStatistics (BullMQ)     |
